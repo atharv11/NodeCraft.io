@@ -10,6 +10,7 @@ import {
   type OnEdgesChange,
   type OnConnect,
   Background,
+  Controls,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
@@ -107,7 +108,7 @@ export default function App() {
   return (
     <div className="bg-amber-100" style={{ width: "100vw", height: "100vh" }}>
       <ReactFlow
-        nodes={nodes}
+              nodes={nodes}
         edges={edges}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
@@ -115,7 +116,12 @@ export default function App() {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         fitView
-      />
+      >
+        <Background />
+        <Controls/>
+      </ReactFlow
+
+      >
     </div>
   );
 }

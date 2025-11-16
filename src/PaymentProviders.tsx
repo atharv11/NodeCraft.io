@@ -28,6 +28,7 @@ const PaymentProviders = ({ data, id }: NodeProps<PaymentProviderNode>) => {
 
       <CustomHandle type="target" position={Position.Left} />
       <CustomHandle type="source" position={Position.Right} />
+     <CustomHandle type="source" position={Position.Top} />
     </div>
   );
 };

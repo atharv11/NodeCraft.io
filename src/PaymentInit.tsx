@@ -1,6 +1,7 @@
 import React from "react";
 import { Position, Handle, type Node, type NodeProps } from "@xyflow/react";
 import CustomHandle from "./CustomHandle.jsx";
+import ToolTip from "./ToolTip.js";
 
 type PaymentInitData = { amount: number };
 export type PaymentInitNode = Node<PaymentInitData, "paymentInit">;
@@ -12,7 +13,9 @@ export default function PaymentInit({ data }: NodeProps<PaymentInitNode>) {
         Payment Initialized
       </div>
       <div className="bg-lime-500 rounded-3xl p-1 border-2">${data.amount}</div>
+      <ToolTip>
       <CustomHandle type="source" position={Position.Right} />
+      </ToolTip>
     </div>
   );
 }
