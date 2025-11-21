@@ -22,13 +22,12 @@ const PaymentProviders = ({ data, id }: NodeProps<PaymentProviderNode>) => {
   };
 
   return (
-    <div className="justify-center items-center flex gap-3 bg-amber-600 border-amber-950 text-amber-100 p-1 px-2 border-2 rounded-3xl">
+    <div className="justify-center items-center flex gap-3 bg-amber-300 text-amber-700 border-amber-950 p-1 px-2 border-2 rounded-3xl">
       <div>{name}</div>
       <RxCross2 className="cursor-pointer" onClick={handleDelete} />
 
       <CustomHandle type="target" position={Position.Left} />
       <CustomHandle type="source" position={Position.Right} />
-     <CustomHandle type="source" position={Position.Top} />
     </div>
   );
 };

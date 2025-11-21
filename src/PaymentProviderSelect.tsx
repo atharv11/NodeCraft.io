@@ -9,10 +9,10 @@ type Provider = { name: string };
 
 // Define the constants outside the component function
 const PAYMENT_PROVIDERS: Provider[] = [
-  { name: "PayPal" },
-  { name: "Stripe" },
-  { name: "Razorpay" },
-  { name: "GooglePay" },
+  { name: "PCB" },
+  { name: "CHIP" },
+  { name: "Heat Spreader" },
+  { name: "Capacitor" },
 ];
 
 // Define common styles for better readability and reuse
@@ -36,7 +36,6 @@ export default function PaymentProviderSelect() {
     setNodes((prevNodes) => [
       ...prevNodes, // Spread operator to include all existing nodes
       {
-        // Use a more robust ID generation (e.g., UUIDs or a more unique pattern)
         // For simplicity, we'll keep your current method but cast prevNodes.length to string.
         id: `provider-${prevNodes.length + 1}`,
         // Position the new node semi-randomly in the flow area
@@ -66,7 +65,7 @@ export default function PaymentProviderSelect() {
         aria-haspopup="true"
         aria-expanded={open ? "true" : undefined}
       >
-        Add Payment Provider
+       Add laptop Component
       </Button>
 
       <Menu
