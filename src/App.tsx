@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import {
   ReactFlow,
   applyNodeChanges,
@@ -13,13 +13,15 @@ import {
   Controls,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
+import { ref, set, get } from "firebase/database";
+import { realtimeDb } from "./FireBase.js"; // Ensure this matches your file name
 
-import PaymentInit from "./PaymentInit.jsx";
-import PaymentCountry from "./PaymentCountry.jsx";
+// Make sure these imports match your actual filenames
+import PaymentInit from "./PaymentInit.js";
+import PaymentCountry from "./PaymentCountry.js";
 import PaymentProviders from "./PaymentProviders.js";
 import PaymentProviderSelect from "./PaymentProviderSelect.js";
 
-// Define node types mapping
 const nodeTypes = {
   paymentInit: PaymentInit,
   paymentCountry: PaymentCountry,
@@ -27,10 +29,8 @@ const nodeTypes = {
   paymentProviderSelect: PaymentProviderSelect,
 };
 
-// Define edge types mapping
 const edgeTypes = {};
 
-// Define initial nodes
 const initialNodes: Node[] = [
   {
     id: "n1",
@@ -94,22 +94,55 @@ const initialNodes: Node[] = [
   },
 ];
 
-// Initial edges
-const initialEdges: Edge[] = [
-  { id: "n1-2", source: "n1", target: "n2", animated: true },
-  { id: "n1-3", source: "n1", target: "n3", animated: true },
-  { id: "n1-4", source: "n1", target: "n4", animated: true },
-  { id: "n1-4.1", source: "n1", target: "n4.1", animated: true },
-
-  { id: "n2-5", source: "n2", target: "n5", animated: true },
-  { id: "n2-6", source: "n2", target: "n6", animated: true },
-  { id: "n2-7", source: "n2", target: "n7", animated: true },
-  { id: "n2-8", source: "n2", target: "n8", animated: true },
-];
+const initialEdges: Edge[] = [];
 
 export default function App() {
   const [nodes, setNodes] = useState(initialNodes);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
+
+  // --- 1. LOAD DATA (useEffect must be TOP LEVEL) ---
+  //useEffect(() => {
+
+  //Code to Retrive Data from firebase
+  const RetriveData = useCallback(async () => {
+    try {
+      const dbRef = ref(realtimeDb, "Nodes and edges");
+      const snapshot = await get(dbRef);
+
+      if (snapshot.exists()) {
+        const dbGet = snapshot.val();
+        console.log("Retrieved data:", dbGet);
+
+        const RetrievedNodes = dbGet.nodes || [];
+        const RetrievedEdges = dbGet.edges || [];
+
+        setNodes(RetrievedNodes);
+        setEdges(RetrievedEdges);
+        alert("Data Restored!");
+      } else {
+        console.log("No data found.");
+      }
+    } catch (error) {
+      console.error("Error retrieving data:", error);
+    }
+  }, [setNodes, setEdges]);
+
+  //RetriveData();
+  //}, []);
+
+  const SaveData = useCallback(async () => {
+    try {
+      const dbRef = ref(realtimeDb, "Nodes and edges");
+      await set(dbRef, {
+        nodes: nodes,
+        edges: edges,
+      });
+      console.log("Saved to Realtime Database!");
+      alert("Data Saved!");
+    } catch (error) {
+      console.error("Error saving:", error);
+    }
+  }, [nodes, edges]);
 
   const onNodesChange: OnNodesChange = useCallback(
     (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
@@ -120,47 +153,57 @@ export default function App() {
     setEdges((eds) => applyEdgeChanges(changes, eds));
   }, []);
 
+  // --- 2. SAVE DATA (onConnect is a sibling of useEffect) ---
   const onConnect: OnConnect = useCallback(
-    (params) => {
-      setEdges((eds) => {
-        // Add a new edge
-        const updatedEdges = addEdge({ ...params, animated: true }, eds);
+    async (params) => {
+      const updatedEdges = addEdge({ ...params, animated: true }, edges);
+      setEdges(updatedEdges);
 
-        const targetId = params.target;
-        // Count connections going INTO the target
-        const countToTarget = updatedEdges.filter(
-          (e) => e.target === targetId
-        ).length;
-       const targetNode = updatedEdges.find((n)=>n.id===params.target)
-       if(targetNode){
-        const targetInfo= targetNode.data.label
-          
-       }
-       console.log(`Total edges connected to ${targetId}: ${countToTarget}`);
-      
+      // 
+      const targetId = params.target;
+      const countToTarget = updatedEdges.filter(
+        (e) => e.target === targetId
+      ).length;
 
-        // Get source node info
-        const sourceNode = nodes.find((n) => n.id === params.source);
+      const targetNode = nodes.find((n) => n.id === params.target);
+      if (targetNode) {
+        const targetInfo =
+          targetNode.data.label ||
+          targetNode.data.ItemName ||
+          targetNode.data.amount ||
+          targetNode.data.name ||
+          "Unknown Source";
+        console.log(`Total edges connected to ${targetInfo}: ${countToTarget}`);
+      }
 
-        if (sourceNode) {
-          const sourceInfo =
-            sourceNode.data.label ||
-            sourceNode.data.ItemName ||
-            sourceNode.data.amount ||
-            sourceNode.data.name ||
-            "Unknown Source";
-
-          console.log(`Connected Source: ${sourceInfo}`);
-        }
-
-        return updatedEdges;
-      });
+      const sourceNode = nodes.find((n) => n.id === params.source);
+      if (sourceNode) {
+        const sourceInfo =
+          sourceNode.data.label ||
+          sourceNode.data.ItemName ||
+          sourceNode.data.amount ||
+          sourceNode.data.name ||
+          "Unknown Source";
+        console.log(`Connected Source: ${sourceInfo}`);
+      }
     },
-    [nodes]
+    [edges, nodes, setEdges]
   );
 
   return (
-    <div className="w-screen h-screen bg-amber-50">
+    <div className=" w-screen h-screen bg-amber-50">
+      <button
+        className="cursor-pointer absolute bottom-[2vw] left-[50vw] w-[10vw] h-[5vw] z-50 bg-amber-600 rounded-3xl"
+        onClick={RetriveData}
+      >
+        Get  your progress
+      </button>
+      <button
+        className="cursor-pointer absolute bottom-[2vw] left-[60vw] w-[10vw] h-[5vw] z-50 bg-amber-600 rounded-3xl"
+        onClick={SaveData}
+      >
+        Save to the Cloud
+      </button>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -169,7 +212,7 @@ export default function App() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
-        className="w-[500px] h-screen bg-red-500"
+        className="w-screen h-screen bg-red-500"
         fitView
       >
         <Background />
