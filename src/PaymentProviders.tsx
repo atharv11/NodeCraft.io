@@ -22,7 +22,7 @@ const PaymentProviders = ({ data, id }: NodeProps<PaymentProviderNode>) => {
   };
 
   return (
-    <div className="justify-center items-center flex gap-3 bg-amber-300 text-amber-700 border-amber-950 p-1 px-2 border-2 rounded-3xl">
+    <div className="justify-center items-center flex gap-3 bg-amber-300 text-amber-700  p-1 px-2 rounded-3xl">
       <div>{name}</div>
       <RxCross2 className="cursor-pointer" onClick={handleDelete} />
 

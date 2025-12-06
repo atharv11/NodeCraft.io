@@ -10,21 +10,26 @@ import {
   type OnEdgesChange,
   type OnConnect,
   Background,
+  BackgroundVariant,
   Controls,
+  ControlButton,
+  ReactFlowProvider,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { ref, set, get } from "firebase/database";
 import { realtimeDb } from "./FireBase.js"; // Ensure this matches your file name
+import { DnDProvider } from "./useDnD.js";
+import { Sidebar } from "./SideBar.js"; //
 
 // Make sure these imports match your actual filenames
-import PaymentInit from "./PaymentInit.js";
-import PaymentCountry from "./PaymentCountry.js";
+import Product from "./Product.js";
+import Process from "./Process.js";
 import PaymentProviders from "./PaymentProviders.js";
 import PaymentProviderSelect from "./PaymentProviderSelect.js";
 
 const nodeTypes = {
-  paymentInit: PaymentInit,
-  paymentCountry: PaymentCountry,
+  product: Product,
+  process: Process,
   paymentProviders: PaymentProviders,
   paymentProviderSelect: PaymentProviderSelect,
 };
@@ -32,71 +37,71 @@ const nodeTypes = {
 const edgeTypes = {};
 
 const initialNodes: Node[] = [
-  {
-    id: "n1",
-    position: { x: 0, y: 0 },
-    data: { amount: "Serial number #1" },
-    type: "paymentInit",
-  },
-  {
-    id: "n2",
-    position: { x: 200, y: 50 },
-    data: { ItemName: "Mother Board", Quantity: 1 },
-    type: "paymentCountry",
-  },
-  {
-    id: "n3",
-    position: { x: 200, y: 100 },
-    data: { ItemName: "RAM", Quantity: 2 },
-    type: "paymentCountry",
-  },
-  {
-    id: "n4",
-    position: { x: 200, y: 150 },
-    data: { ItemName: "Storage (SSD)", Quantity: 1 },
-    type: "paymentCountry",
-  },
-  {
-    id: "n4.1",
-    position: { x: 200, y: 200 },
-    data: { ItemName: "Display Panel", Quantity: 1 },
-    type: "paymentCountry",
-  },
-  {
-    id: "n5",
-    position: { x: 350, y: 0 },
-    data: { name: "Chip" },
-    type: "paymentProviders",
-  },
-  {
-    id: "n6",
-    position: { x: 350, y: 50 },
-    data: { name: "PCB" },
-    type: "paymentProviders",
-  },
-  {
-    id: "n7",
-    position: { x: 350, y: 100 },
-    data: { name: "Heat Spreader" },
-    type: "paymentProviders",
-  },
-  {
-    id: "n8",
-    position: { x: 350, y: 150 },
-    data: { name: "Capacitor" },
-    type: "paymentProviders",
-  },
-  {
-    id: "n9",
-    position: { x: 150, y: -50 },
-    data: { name: "Add component to add in your custom Laptop" },
-    type: "paymentProviderSelect",
-  },
+  // {
+  //   id: "n1",
+  //   position: { x: 0, y: 0 },
+  //   data: { amount: "Serial number #1" },
+  //   type: "Product",
+  // },
+  // {
+  //   id: "n2",
+  //   position: { x: 200, y: 50 },
+  //   data: { ItemName: "Mother Board", Quantity: 1 },
+  //   type: "Process",
+  // },
+  // {
+  //   id: "n3",
+  //   position: { x: 200, y: 100 },
+  //   data: { ItemName: "RAM", Quantity: 2 },
+  //   type: "Process",
+  // },
+  // {
+  //   id: "n4",
+  //   position: { x: 200, y: 150 },
+  //   data: { ItemName: "Storage (SSD)", Quantity: 1 },
+  //   type: "Process",
+  // },
+  // {
+  //   id: "n4.1",
+  //   position: { x: 200, y: 200 },
+  //   data: { ItemName: "Display Panel", Quantity: 1 },
+  //   type: "Process",
+  // },
+  // {
+  //   id: "n5",
+  //   position: { x: 350, y: 0 },
+  //   data: { name: "Chip" },
+  //   type: "paymentProviders",
+  // },
+  // {
+  //   id: "n6",
+  //   position: { x: 350, y: 50 },
+  //   data: { name: "PCB" },
+  //   type: "paymentProviders",
+  // },
+  // {
+  //   id: "n7",
+  //   position: { x: 350, y: 100 },
+  //   data: { name: "Heat Spreader" },
+  //   type: "paymentProviders",
+  // },
+  // {
+  //   id: "n8",
+  //   position: { x: 350, y: 150 },
+  //   data: { name: "Capacitor" },
+  //   type: "paymentProviders",
+  // },
+  // {
+  //   id: "n9",
+  //   position: { x: 150, y: -50 },
+  //   data: { name: "Add component to add in your custom Laptop" },
+  //   type: "paymentProviderSelect",
+  // },
 ];
 
-const initialEdges: Edge[] = [];
+function FlowContent() {
+  const initialEdges: Edge[] = [];
 
-export default function App() {
   const [nodes, setNodes] = useState(initialNodes);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
 
@@ -159,7 +164,7 @@ export default function App() {
       const updatedEdges = addEdge({ ...params, animated: true }, edges);
       setEdges(updatedEdges);
 
-      // 
+      //
       const targetId = params.target;
       const countToTarget = updatedEdges.filter(
         (e) => e.target === targetId
@@ -191,15 +196,16 @@ export default function App() {
   );
 
   return (
-    <div className=" w-screen h-screen bg-amber-50">
+    <div className=" w-screen h-screen bg-[#E6E6E6]">
+      <Sidebar />
       <button
-        className="cursor-pointer absolute bottom-[2vw] left-[50vw] w-[10vw] h-[5vw] z-50 bg-amber-600 rounded-3xl"
+        className="cursor-pointer absolute bottom-[2vw] left-[50vw] w-[10vw] h-[5vw] z-50 bg-[#ffffff] rounded-3xl"
         onClick={RetriveData}
       >
-        Get  your progress
+        Get your progress
       </button>
       <button
-        className="cursor-pointer absolute bottom-[2vw] left-[60vw] w-[10vw] h-[5vw] z-50 bg-amber-600 rounded-3xl"
+        className="cursor-pointer absolute bottom-[2vw] left-[60vw] w-[10vw] h-[5vw] z-50 bg-[#353535] text-white rounded-3xl"
         onClick={SaveData}
       >
         Save to the Cloud
@@ -213,11 +219,32 @@ export default function App() {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         className="w-screen h-screen bg-red-500"
-        fitView
+      
       >
-        <Background />
-        <Controls />
+        <Background
+      id="2"
+        gap={50}
+        color="#878787"
+        variant={BackgroundVariant.Cross}
+        />
+        <Controls
+          position="bottom-right"
+          className="bg-[white] shadow-4xl   rounded-xl m-4 p-1 overflow-hidden"
+        ></Controls>
       </ReactFlow>
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    // 1. ReactFlowProvider must be the outermost wrapper for the flow logic
+    <ReactFlowProvider>
+      {/* 2. DnDProvider must be inside ReactFlowProvider for useReactFlow compatibility */}
+      <DnDProvider>
+        {/* 3. FlowContent renders the Sidebar and ReactFlow component */}
+        <FlowContent />
+      </DnDProvider>
+    </ReactFlowProvider>
   );
 }

@@ -10,12 +10,12 @@ const CustomHandle: FC<HandleProps> = ({ style, ...props }) => {
     <Handle
       {...props}
       style={{
-        width: 10,
-        height: 10,
-        background: "white",
-        border: "2px solid black",
-        borderRadius: "50%",
+        width: "1.5vw",
+        height: "1.5vw",
+        background: "#0E6EF7",
+        border: ".5vw ",
         cursor: "pointer",
+      
         // We spread the original 'style' prop *first* to allow the user
         // to override any of these default styles if needed.
         ...style,
