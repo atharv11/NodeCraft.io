@@ -17,24 +17,28 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { ref, set, get } from "firebase/database";
-import { realtimeDb } from "./FireBase.js"; // Ensure this matches your file name
+import { realtimeDb, auth } from "./FireBase.js"; 
+import { doc, setDoc, getDoc } from "firebase/firestore";
 import { DnDProvider } from "./useDnD.js";
-import { Sidebar } from "./SideBar.js"; //
+import { Sidebar } from "./SideBar.js";
+import ButtonEdge from "./ButtonEdge.js";
 
-// Make sure these imports match your actual filenames
 import Product from "./Product.js";
 import Process from "./Process.js";
-import PaymentProviders from "./PaymentProviders.js";
-import PaymentProviderSelect from "./PaymentProviderSelect.js";
+import Resources from "./Resources.js";
+
+import { onAuthStateChanged } from "firebase/auth";
+import Auth from "./Auth.js";
 
 const nodeTypes = {
   product: Product,
   process: Process,
-  paymentProviders: PaymentProviders,
-  paymentProviderSelect: PaymentProviderSelect,
+  resources: Resources,
 };
 
-const edgeTypes = {};
+const edgeTypes = {
+  buttonEdge: ButtonEdge,
+};
 
 const initialNodes: Node[] = [
   // {
@@ -71,48 +75,48 @@ const initialNodes: Node[] = [
   //   id: "n5",
   //   position: { x: 350, y: 0 },
   //   data: { name: "Chip" },
-  //   type: "paymentProviders",
+  //   type: "Resourcess",
   // },
   // {
   //   id: "n6",
   //   position: { x: 350, y: 50 },
   //   data: { name: "PCB" },
-  //   type: "paymentProviders",
+  //   type: "Resourcess",
   // },
   // {
   //   id: "n7",
   //   position: { x: 350, y: 100 },
   //   data: { name: "Heat Spreader" },
-  //   type: "paymentProviders",
+  //   type: "Resourcess",
   // },
   // {
   //   id: "n8",
   //   position: { x: 350, y: 150 },
   //   data: { name: "Capacitor" },
-  //   type: "paymentProviders",
+  //   type: "Resourcess",
   // },
   // {
   //   id: "n9",
   //   position: { x: 150, y: -50 },
   //   data: { name: "Add component to add in your custom Laptop" },
-  //   type: "paymentProviderSelect",
+  //   type: "ResourcesSelect",
   // },
 ];
 
 function FlowContent() {
   const initialEdges: Edge[] = [];
-
   const [nodes, setNodes] = useState(initialNodes);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
 
-  // --- 1. LOAD DATA (useEffect must be TOP LEVEL) ---
+  //   LOAD DATA 
   //useEffect(() => {
 
   //Code to Retrive Data from firebase
   const RetriveData = useCallback(async () => {
+  
     try {
-      const dbRef = ref(realtimeDb, "Nodes and edges");
-      const snapshot = await get(dbRef);
+      const docRef = ref(realtimeDb, "Nodes and edges");
+      const snapshot = await get(docRef);
 
       if (snapshot.exists()) {
         const dbGet = snapshot.val();
@@ -158,10 +162,17 @@ function FlowContent() {
     setEdges((eds) => applyEdgeChanges(changes, eds));
   }, []);
 
-  // --- 2. SAVE DATA (onConnect is a sibling of useEffect) ---
   const onConnect: OnConnect = useCallback(
     async (params) => {
-      const updatedEdges = addEdge({ ...params, animated: true }, edges);
+      const updatedEdges = addEdge(
+        {
+          ...params,
+          type: "buttonEdge",
+          animated: true,
+          style: { strokeWidth: 3, stroke: "#0E6EF7" },
+        },
+        edges
+      );
       setEdges(updatedEdges);
 
       //
@@ -218,14 +229,13 @@ function FlowContent() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
-        className="w-screen h-screen bg-red-500"
-      
+        className="w-screen h-screen "
       >
         <Background
-      id="2"
-        gap={50}
-        color="#878787"
-        variant={BackgroundVariant.Cross}
+          id="2"
+          gap={50}
+          color="#878787"
+          variant={BackgroundVariant.Cross}
         />
         <Controls
           position="bottom-right"
@@ -237,12 +247,30 @@ function FlowContent() {
 }
 
 export default function App() {
+
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Check Auth Status on Load
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser as any);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // 2. Show Loading Spinner while checking
+  if (loading) return <div className="text-center mt-20 text-xl font-bold">Loading...</div>;
+
+  // 3. Show Login Page if NOT logged in
+  if (!user) {
+    return <Auth />;
+  }
+
   return (
-    // 1. ReactFlowProvider must be the outermost wrapper for the flow logic
     <ReactFlowProvider>
-      {/* 2. DnDProvider must be inside ReactFlowProvider for useReactFlow compatibility */}
       <DnDProvider>
-        {/* 3. FlowContent renders the Sidebar and ReactFlow component */}
         <FlowContent />
       </DnDProvider>
     </ReactFlowProvider>

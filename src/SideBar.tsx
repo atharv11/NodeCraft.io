@@ -2,8 +2,9 @@ import { useReactFlow, type XYPosition } from "@xyflow/react";
 import { useCallback, useState } from "react";
 // NOTE: Assuming this file exists and contains OnDropAction, useDnD, useDnDPosition
 import { type OnDropAction, useDnD, useDnDPosition } from "./useDnD.js";
-import CustomHandle from "./CustomHandle.js";
-import PaymentInit from "./Product.js";
+import Button from "@mui/material/Button";
+import { signOut } from "firebase/auth";
+import { auth } from "./FireBase.js";
 
 // This is a simple ID generator for the nodes.
 let id = 0;
@@ -56,10 +57,10 @@ export function Sidebar() {
   // The type of the node that is being dragged.
   const [type, setType] = useState<string | null>(null);
 
-  const { setNodes } = useReactFlow();
+  const { setNodes , setEdges } = useReactFlow();
 
   const createAddNewNode = useCallback(
-    (nodeType: string): OnDropAction => {
+    (nodeType: string ): OnDropAction => {
       return ({ position }: { position: XYPosition }) => {
         // Here, we create a new node and add it to the flow.
         const newNode = {
@@ -75,6 +76,31 @@ export function Sidebar() {
     },
     [setNodes, setType]
   );
+    const createAddNewEdge = useCallback(
+    ( edgeTypes:string): OnDropAction => {
+      return ({ position }: { position: XYPosition }) => {
+        // Here, we create a new node and add it to the flow.
+        const newEdge = {
+          id: getId(),
+          type: edgeTypes,
+          position,
+          data: { label: `${edgeTypes} node` },
+        };
+
+        setNodes((nds) => nds.concat(newEdge));
+        setType(null);
+      };
+    },
+    [setNodes, setType]
+  );
+   // --- 2. LOGOUT FUNCTION ---
+  const handleLogout = useCallback(async () => {
+    try {
+      await signOut(auth); 
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  }, []);
 
   return (
     // Outer container for the sidebar layout
@@ -83,7 +109,7 @@ export function Sidebar() {
           It must be rendered inside the provider chain (App -> DnDProvider -> FlowContent -> Sidebar) */}
       {isDragging && <DragGhost type={type} />}
 
-      <aside className="bg-[#333333]   h-full rounded-4xl shadow-xl ">
+      <aside className="bg-[#333333]    h-full rounded-4xl shadow-xl ">
         <div className=" bg-[#0E6EF7]  w-full h-[7.5vw] mb-4 text-white text-sm rounded-4xl p-4">
           <div className=" w-2 h-2   rounded-full border-[1.15vw] rotate-135 border-white border-t-transparent"></div>
         </div>
@@ -92,7 +118,7 @@ export function Sidebar() {
           <div
             className="dndnode input bg-[#FFFFFF] p-3 mb-3 rounded-2xl text-[#121710] cursor-grab shadow-md hover:bg-red-700 transition"
             onPointerDown={(event) => {
-              setType("PaymentInit");
+              setType("Product");
               onDragStart(
                 event as React.PointerEvent<HTMLDivElement>,
                 createAddNewNode("product")
@@ -106,7 +132,7 @@ export function Sidebar() {
           <div
             className="dndnode bg-[#FFFFFF] p-3 mb-3 rounded-2xl  text-[#121710] cursor-grab shadow-md hover:bg-yellow-700 transition"
             onPointerDown={(event) => {
-              setType("default");
+              setType("process");
               onDragStart(
                 event as React.PointerEvent<HTMLDivElement>,
                 createAddNewNode("process")
@@ -120,17 +146,21 @@ export function Sidebar() {
           <div
             className="dndnode output bg-[#FFFFFF] p-3 mb-3 rounded-2xl text-[#121710] cursor-grab shadow-md hover:bg-blue-700 transition"
             onPointerDown={(event) => {
-              setType("Product");
+              setType("resources");
               onDragStart(
                 event as React.PointerEvent<HTMLDivElement>,
-                createAddNewNode("paymentProviders")
+                createAddNewNode("resources"),
+                
               );
             }}
           >
             Resources
           </div>
+         
         </div>
+            <Button className="w-[2vw] h-[2vw] p-[1vw]  " onClick={handleLogout}>Logout</Button>
       </aside>
+   
     </div>
   );
 }

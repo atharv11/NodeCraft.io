@@ -1,3 +1,5 @@
+//name of this file was PaymentCountry before
+
 import React, { useCallback } from "react";
 import { Handle, Position, useReactFlow, type Node, type NodeProps } from "@xyflow/react";
 import CustomHandle from "./CustomHandle.js";
@@ -17,12 +19,14 @@ const Process = ({ data , id}: NodeProps<ProcessNode>) => {
   const { ItemName, Quantity } = data;
    const onChange = useCallback((evt: React.ChangeEvent<HTMLInputElement>) => {
       console.log(evt.target.value);
-    //save name of the node as data with the node data
+    //save "name" of the node as data with the node data
       setNodes((nodes) => nodes.map(n => {
         if (n.id === id) {
           return { ...n, data: { ...n.data, ItemName: evt.target.value } };
         }
-        return n;
+        return (
+          n
+          );
       }));
      
     }, []);
@@ -34,9 +38,9 @@ const Process = ({ data , id}: NodeProps<ProcessNode>) => {
     
 
   return (
-  <div className="w-full h-full">
+  <div className="w-full h-full ">
   
-        <div className="ProductNode w-20px h-10px rounded-3xl bg-[#0E6EF7] text-white ">
+        <div className="ProductNode w-20px h-10px rounded-3xl bg-[#0E6EF7] text-white shadow-2xl">
           <div className="multiPurposeButton pl-[15vw] p-2">
           <RxCross2 className="w-[2.5vw] h-[2.5vw] cursor-pointer text-[#353535] bg-[#ffffff] rounded-full p-1" onClick={handleDelete} />
           </div>
@@ -48,15 +52,17 @@ const Process = ({ data , id}: NodeProps<ProcessNode>) => {
               name="text" 
                placeholder="Name your process"
               onChange={onChange} 
-              className="nodrag" 
+              className="nodrag text-[1.5vw]" 
              defaultValue={data.ItemName || ""}
+             
             />
           </div>
         </div>
         </div>
   
-        <CustomHandle className="" type="source" position={Position.Left} />
-           <CustomHandle type="target" position={Position.Right} />
+       <CustomHandle type="source" position={Position.Top} id="source-top" />
+       <CustomHandle type="source" position={Position.Right} id="source-right" />
+      <CustomHandle type="target" position={Position.Bottom} />
       </div>
   );
 };

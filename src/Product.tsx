@@ -1,3 +1,4 @@
+// name of this file was PaymentInit before
 import React, { useCallback } from "react";
 import { Position, type NodeProps, useReactFlow, type Node } from "@xyflow/react";
 import { RxCross2 } from "react-icons/rx";
@@ -32,7 +33,7 @@ export default function Product({ data, id }: NodeProps<ProductNode>) {
   return (
     <div className="w-full h-full">
 
-      <div className="ProductNode w-20px h-10px rounded-3xl bg-[#353535] text-white ">
+      <div className="ProductNode w-20px h-10px rounded-3xl bg-[#353535] text-white shadow-2xl">
         <div className="multiPurposeButton pl-[15vw] p-2">
         <RxCross2 className="w-[2.5vw] h-[2.5vw] cursor-pointer  bg-[#898989] rounded-full p-1" onClick={handleDelete} />
         </div>
@@ -44,14 +45,15 @@ export default function Product({ data, id }: NodeProps<ProductNode>) {
             name="text" 
              placeholder="Give your node a name"
             onChange={onChange} 
-            className="nodrag" 
+            className="nodrag text-[1.5vw]" 
             defaultValue={data.amount || ""} // prevents warning if amount is undefined
           />
         </div>
       </div>
       </div>
 
-      <CustomHandle type="source" position={Position.Right} />
+      <CustomHandle type="source" position={Position.Top} />
+      <CustomHandle type="target" position={Position.Bottom} />
     </div>
   );
 }
