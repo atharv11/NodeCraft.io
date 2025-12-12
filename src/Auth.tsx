@@ -33,10 +33,10 @@ export default function Auth() {
 
   return (
     <div className="flex items-center justify-center h-screen bg-gray-900">
-      <div className="  shadow-xl w-full max-w-md h-screen p-[2vw] border-gray-200">
-         <div className="relative w-full h-[12vw] rounded-t-2xl overflow-hidden flex items-center justify-center">
+      <div className="  shadow-xl w-full max-w-md h-screen p-[1vw] border-gray-200">
+         <div className="relative w-full h-[10vw] rounded-t-2xl overflow-hidden flex items-center justify-center">
   
-  {/* VIDEO (Background Layer)  */}
+
   <video 
     className="absolute top-0 left-0 w-full h-full object-cover z-0" // object-cover prevents stretching
     src="/Pink_gradient.mp4" 
@@ -54,10 +54,10 @@ export default function Auth() {
             
         <div className='login/sign-up_content p-5 bg-white rounded-b-2xl'>
         
-        <h2 className="text-3xl  font-bold text-center text-gray-800">
+        <h2 className="text-xl  font-bold text-center text-gray-800">
           {isLogin ? 'Welcome' : 'Create Account'}
         </h2>
-        <p className="text-center text-gray-500 mb-6">
+        <p className="text-center text-gray-500">
           {isLogin ? 'Enter your details to sign in.' : 'Start your journey with us.'}
         </p>
 
@@ -71,7 +71,7 @@ export default function Auth() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1 ">Email</label>
+            <label className="block text-sm font-medium text-gray-700  ">Email</label>
             <input
               type="email"
               required
@@ -105,7 +105,7 @@ export default function Auth() {
         </form>
 
         {/* Toggle Login/Signup */}
-        <div className="mt-6 text-center text-sm text-gray-600">
+        <div className=" text-center text-sm text-gray-600">
           {isLogin ? "Don't have an account? " : "Already have an account? "}
           <button
             onClick={() => setIsLogin(!isLogin)}
