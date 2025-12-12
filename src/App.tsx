@@ -12,13 +12,16 @@ import {
   Background,
   BackgroundVariant,
   Controls,
-  ControlButton,
   ReactFlowProvider,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { ref, set, get } from "firebase/database";
-import { realtimeDb, auth } from "./FireBase.js"; 
-import { doc, setDoc, getDoc } from "firebase/firestore";
+
+// Note: You must ensure 'realtimeDb' is imported correctly from FireBase.js
+// which exports: { auth, db, realtimeDb }
+import { auth, realtimeDb } from "./FireBase.js"; 
+import { ref, set, get } from "firebase/database"; // Realtime DB imports
+import { onAuthStateChanged, type User } from "firebase/auth";
+
 import { DnDProvider } from "./useDnD.js";
 import { Sidebar } from "./SideBar.js";
 import ButtonEdge from "./ButtonEdge.js";
@@ -26,8 +29,6 @@ import ButtonEdge from "./ButtonEdge.js";
 import Product from "./Product.js";
 import Process from "./Process.js";
 import Resources from "./Resources.js";
-
-import { onAuthStateChanged } from "firebase/auth";
 import Auth from "./Auth.js";
 
 const nodeTypes = {
@@ -39,119 +40,61 @@ const nodeTypes = {
 const edgeTypes = {
   buttonEdge: ButtonEdge,
 };
+//intial nodes set to null
+const initialNodes: Node[] = [];
 
-const initialNodes: Node[] = [
-  // {
-  //   id: "n1",
-  //   position: { x: 0, y: 0 },
-  //   data: { amount: "Serial number #1" },
-  //   type: "Product",
-  // },
-  // {
-  //   id: "n2",
-  //   position: { x: 200, y: 50 },
-  //   data: { ItemName: "Mother Board", Quantity: 1 },
-  //   type: "Process",
-  // },
-  // {
-  //   id: "n3",
-  //   position: { x: 200, y: 100 },
-  //   data: { ItemName: "RAM", Quantity: 2 },
-  //   type: "Process",
-  // },
-  // {
-  //   id: "n4",
-  //   position: { x: 200, y: 150 },
-  //   data: { ItemName: "Storage (SSD)", Quantity: 1 },
-  //   type: "Process",
-  // },
-  // {
-  //   id: "n4.1",
-  //   position: { x: 200, y: 200 },
-  //   data: { ItemName: "Display Panel", Quantity: 1 },
-  //   type: "Process",
-  // },
-  // {
-  //   id: "n5",
-  //   position: { x: 350, y: 0 },
-  //   data: { name: "Chip" },
-  //   type: "Resourcess",
-  // },
-  // {
-  //   id: "n6",
-  //   position: { x: 350, y: 50 },
-  //   data: { name: "PCB" },
-  //   type: "Resourcess",
-  // },
-  // {
-  //   id: "n7",
-  //   position: { x: 350, y: 100 },
-  //   data: { name: "Heat Spreader" },
-  //   type: "Resourcess",
-  // },
-  // {
-  //   id: "n8",
-  //   position: { x: 350, y: 150 },
-  //   data: { name: "Capacitor" },
-  //   type: "Resourcess",
-  // },
-  // {
-  //   id: "n9",
-  //   position: { x: 150, y: -50 },
-  //   data: { name: "Add component to add in your custom Laptop" },
-  //   type: "ResourcesSelect",
-  // },
-];
 
-function FlowContent() {
+function FlowContent({ user }: { user: User }) {
   const initialEdges: Edge[] = [];
   const [nodes, setNodes] = useState(initialNodes);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
 
-  //   LOAD DATA 
-  //useEffect(() => {
-
-  //Code to Retrive Data from firebase
+  // Retrieve Data from Realtime Database 
   const RetriveData = useCallback(async () => {
-  
     try {
-      const docRef = ref(realtimeDb, "Nodes and edges");
-      const snapshot = await get(docRef);
+      // Path: users/{user.uid}
+      const dbRef = ref(realtimeDb, `users/${user.uid}`);
+      const snapshot = await get(dbRef);
 
       if (snapshot.exists()) {
-        const dbGet = snapshot.val();
-        console.log("Retrieved data:", dbGet);
+        const data = snapshot.val();
+        console.log("Retrieved data from RTDB:", data);
 
-        const RetrievedNodes = dbGet.nodes || [];
-        const RetrievedEdges = dbGet.edges || [];
+        const RetrievedNodes = data.nodes || [];
+        const RetrievedEdges = data.edges || [];
 
         setNodes(RetrievedNodes);
         setEdges(RetrievedEdges);
-        alert("Data Restored!");
+        alert("Data Restored from Realtime Database!");
       } else {
-        console.log("No data found.");
+        console.log("No data found for this user in RTDB.");
       }
     } catch (error) {
-      console.error("Error retrieving data:", error);
+      console.error("Error retrieving data from RTDB:", error);
     }
-  }, [setNodes, setEdges]);
+  }, [user, setNodes, setEdges]);
 
-  //RetriveData();
-  //}, []);
-
+  // --- CHANGED: Save Data to Realtime Database ---
   const SaveData = useCallback(async () => {
     try {
-      const dbRef = ref(realtimeDb, "Nodes and edges");
+      // Path: users/{user.uid}
+      const dbRef = ref(realtimeDb, `users/${user.uid}`); 
+      
+      // We use set() to write the entire object under the user's ID
       await set(dbRef, {
         nodes: nodes,
         edges: edges,
+        email: user.email, // Storing user details alongside flow data
+        lastUpdated: new Date().toISOString()
       });
+      
       console.log("Saved to Realtime Database!");
-      alert("Data Saved!");
+      alert("Data Saved to Realtime Database!");
     } catch (error) {
-      console.error("Error saving:", error);
+      console.error("Error saving to RTDB:", error);
+      alert("Failed to save data.");
     }
-  }, [nodes, edges]);
+  }, [nodes, edges, user]);
 
   const onNodesChange: OnNodesChange = useCallback(
     (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
@@ -174,40 +117,12 @@ function FlowContent() {
         edges
       );
       setEdges(updatedEdges);
-
-      //
-      const targetId = params.target;
-      const countToTarget = updatedEdges.filter(
-        (e) => e.target === targetId
-      ).length;
-
-      const targetNode = nodes.find((n) => n.id === params.target);
-      if (targetNode) {
-        const targetInfo =
-          targetNode.data.label ||
-          targetNode.data.ItemName ||
-          targetNode.data.amount ||
-          targetNode.data.name ||
-          "Unknown Source";
-        console.log(`Total edges connected to ${targetInfo}: ${countToTarget}`);
-      }
-
-      const sourceNode = nodes.find((n) => n.id === params.source);
-      if (sourceNode) {
-        const sourceInfo =
-          sourceNode.data.label ||
-          sourceNode.data.ItemName ||
-          sourceNode.data.amount ||
-          sourceNode.data.name ||
-          "Unknown Source";
-        console.log(`Connected Source: ${sourceInfo}`);
-      }
     },
-    [edges, nodes, setEdges]
+    [edges, setEdges]
   );
 
   return (
-    <div className=" w-screen h-screen bg-[#E6E6E6]">
+    <div className="w-screen h-screen bg-[#E6E6E6]">
       <Sidebar />
       <button
         className="cursor-pointer absolute bottom-[2vw] left-[50vw] w-[10vw] h-[5vw] z-50 bg-[#ffffff] rounded-3xl"
@@ -229,7 +144,7 @@ function FlowContent() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
-        className="w-screen h-screen "
+        className="w-screen h-screen"
       >
         <Background
           id="2"
@@ -239,31 +154,51 @@ function FlowContent() {
         />
         <Controls
           position="bottom-right"
-          className="bg-[white] shadow-4xl   rounded-xl m-4 p-1 overflow-hidden"
+          className="bg-[white] shadow-4xl rounded-xl m-4 p-1 overflow-hidden"
         ></Controls>
       </ReactFlow>
     </div>
   );
 }
 
-export default function App() {
+// Ensure App component uses the correct typing for state (User | null)
 
-  const [user, setUser] = useState(null);
+export default function App() {
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Check Auth Status on Load
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser as any);
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      setUser(currentUser);
       setLoading(false);
+
+      if (currentUser) {
+        // --- Optional: Initialize data structure in RTDB on first login ---
+        // This is done automatically by SaveData, but kept here for completeness
+        try {
+          const dbRef = ref(realtimeDb, `users/${currentUser.uid}`);
+          const snapshot = await get(dbRef);
+
+          if (!snapshot.exists()) {
+             // Initialize basic structure if it doesn't exist
+             await set(dbRef, {
+                email: currentUser.email,
+                nodes: [], 
+                edges: [],
+                createdAt: new Date().toISOString(),
+              });
+              console.log("RTDB profile created");
+          }
+        } catch (err) {
+          console.error("Error creating RTDB profile:", err);
+        }
+      }
     });
     return () => unsubscribe();
   }, []);
 
-  // 2. Show Loading Spinner while checking
   if (loading) return <div className="text-center mt-20 text-xl font-bold">Loading...</div>;
 
-  // 3. Show Login Page if NOT logged in
   if (!user) {
     return <Auth />;
   }
@@ -271,7 +206,7 @@ export default function App() {
   return (
     <ReactFlowProvider>
       <DnDProvider>
-        <FlowContent />
+        <FlowContent user={user} />
       </DnDProvider>
     </ReactFlowProvider>
   );
