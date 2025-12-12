@@ -42,7 +42,7 @@ export default function Auth() {
     src="/Pink_gradient.mp4" 
     autoPlay 
     loop 
-    muted 
+    muted
   />
 
   {/* TEXT (Foreground Layer) */}
