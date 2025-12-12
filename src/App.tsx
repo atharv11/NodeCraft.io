@@ -16,8 +16,7 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
-// Note: You must ensure 'realtimeDb' is imported correctly from FireBase.js
-// which exports: { auth, db, realtimeDb }
+//Firebase imports
 import { auth, realtimeDb } from "./FireBase.js"; 
 import { ref, set, get } from "firebase/database"; // Realtime DB imports
 import { onAuthStateChanged, type User } from "firebase/auth";
@@ -74,13 +73,11 @@ function FlowContent({ user }: { user: User }) {
     }
   }, [user, setNodes, setEdges]);
 
-  // --- CHANGED: Save Data to Realtime Database ---
+  //  Save Data to Realtime Database ---
   const SaveData = useCallback(async () => {
     try {
-      // Path: users/{user.uid}
       const dbRef = ref(realtimeDb, `users/${user.uid}`); 
-      
-      // We use set() to write the entire object under the user's ID
+
       await set(dbRef, {
         nodes: nodes,
         edges: edges,

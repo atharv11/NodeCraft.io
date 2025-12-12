@@ -32,11 +32,11 @@ export default function Auth() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-900">
-      <div className="  shadow-xl w-full max-w-md h-[35vw] border-gray-200">
+    <div className="flex items-center justify-center h-screen bg-gray-900">
+      <div className="  shadow-xl w-full max-w-md h-screen p-[2vw] border-gray-200">
          <div className="relative w-full h-[12vw] rounded-t-2xl overflow-hidden flex items-center justify-center">
   
-  {/* 1. VIDEO (Background Layer) */}
+  {/* VIDEO (Background Layer)  */}
   <video 
     className="absolute top-0 left-0 w-full h-full object-cover z-0" // object-cover prevents stretching
     src="/Pink_gradient.mp4" 
@@ -45,7 +45,7 @@ export default function Auth() {
     muted 
   />
 
-  {/* 2. TEXT (Foreground Layer) */}
+  {/* TEXT (Foreground Layer) */}
   <h1 className="relative z-10 text-[2vw] font-light text-white mix-blend-difference">
     NodeCraft.io
   </h1>
@@ -53,7 +53,7 @@ export default function Auth() {
 </div>
             
         <div className='login/sign-up_content p-5 bg-white rounded-b-2xl'>
-        {/* Header */}
+        
         <h2 className="text-3xl  font-bold text-center text-gray-800">
           {isLogin ? 'Welcome' : 'Create Account'}
         </h2>
@@ -61,14 +61,14 @@ export default function Auth() {
           {isLogin ? 'Enter your details to sign in.' : 'Start your journey with us.'}
         </p>
 
-        {/* Error Message */}
+
         {error && (
           <div className="bg-red-50 text-red-500 text-sm p-3 rounded-lg mb-4 border border-red-200">
             {error}
           </div>
         )}
 
-        {/* Form */}
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1 ">Email</label>
