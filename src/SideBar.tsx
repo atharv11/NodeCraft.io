@@ -62,7 +62,7 @@ export function Sidebar() {
   const createAddNewNode = useCallback(
     (nodeType: string ): OnDropAction => {
       return ({ position }: { position: XYPosition }) => {
-        // Here, we create a new node and add it to the flow.
+        // here the new node is created every time dragged from the sidebar window
         const newNode = {
           id: getId(),
           type: nodeType,
@@ -79,7 +79,7 @@ export function Sidebar() {
     const createAddNewEdge = useCallback(
     ( edgeTypes:string): OnDropAction => {
       return ({ position }: { position: XYPosition }) => {
-        // Here, we create a new node and add it to the flow.
+        // this is wehre the new edge is created
         const newEdge = {
           id: getId(),
           type: edgeTypes,
@@ -93,7 +93,7 @@ export function Sidebar() {
     },
     [setNodes, setType]
   );
-   // --- 2. LOGOUT FUNCTION ---
+   //LOGOUT FUNCTION 
   const handleLogout = useCallback(async () => {
     try {
       await signOut(auth); 
