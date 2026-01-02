@@ -5,6 +5,9 @@ import { type OnDropAction, useDnD, useDnDPosition } from "./useDnD.js";
 import Button from "@mui/material/Button";
 import { signOut } from "firebase/auth";
 import { auth } from "./FireBase.js";
+import { FaArrowLeft } from "react-icons/fa";
+import Dashboard from "./Dashboard.js";
+
 
 // This is a simple ID generator for the nodes.
 let id = 0;
@@ -51,8 +54,11 @@ export function DragGhost({ type }: DragGhostProps) {
 }
 
 // --- Sidebar Component ---
+interface SidebarProps {
+  onBack: () => void; // <--- NEW PROP
+}
 
-export function Sidebar() {
+export function Sidebar({onBack}: SidebarProps) {
   const { onDragStart, isDragging } = useDnD();
   // The type of the node that is being dragged.
   const [type, setType] = useState<string | null>(null);
@@ -94,13 +100,13 @@ export function Sidebar() {
     [setNodes, setType]
   );
    //LOGOUT FUNCTION 
-  const handleLogout = useCallback(async () => {
-    try {
-      await signOut(auth); 
-    } catch (error) {
-      console.error("Error logging out:", error);
-    }
-  }, []);
+  // const handleLogout = useCallback(async () => {
+  //   try {
+  //     await signOut(auth); 
+  //   } catch (error) {
+  //     console.error("Error logging out:", error);
+  //   }
+  // }, []);
 
   return (
     // Outer container for the sidebar layout
@@ -109,14 +115,16 @@ export function Sidebar() {
           It must be rendered inside the provider chain (App -> DnDProvider -> FlowContent -> Sidebar) */}
       {isDragging && <DragGhost type={type} />}
 
-      <aside className="bg-[#333333]    h-full rounded-4xl shadow-xl ">
-        <div className=" bg-[#0E6EF7]  w-full h-[7.5vw] mb-4 text-white text-sm rounded-4xl p-4">
-          <div className=" w-2 h-2   rounded-full border-[1.15vw] rotate-135 border-white border-t-transparent"></div>
+      <aside className="bg-[#333333]   text-xs h-full rounded-4xl shadow-xl ">
+        <FaArrowLeft className="bg-[#ffffff]  rounded-full p-1 text-xl absolute  right-2 top-2 z-22 cursor-pointer" onClick={onBack}/>
+        <div className="flex items-center bg-[#0E6EF7]  w-full h-[7.5vw] mb-4 text-white text-sm rounded-xl p-4">
+           <div className=" w-2 h-2   rounded-full border-[1.15vw] rotate-135 border-white border-t-transparent"></div> 
+         
         </div>
         <div className="p-4 ">
           {/* Draggable Node 1: Input */}
           <div
-            className="dndnode input bg-[#FFFFFF] p-3 mb-3 rounded-2xl text-[#121710] cursor-grab shadow-md hover:bg-red-700 transition"
+            className="dndnode input bg-[#FFFFFF] p-2 mb-3 rounded-xl text-[#121710] cursor-grab shadow-md hover:bg-red-700 transition "
             onPointerDown={(event) => {
               setType("Product");
               onDragStart(
@@ -130,7 +138,7 @@ export function Sidebar() {
 
           {/* Draggable Node 2: Default */}
           <div
-            className="dndnode bg-[#FFFFFF] p-3 mb-3 rounded-2xl  text-[#121710] cursor-grab shadow-md hover:bg-yellow-700 transition"
+            className="dndnode bg-[#FFFFFF] p-2 mb-3 rounded-xl text-[#121710] cursor-grab shadow-md hover:bg-yellow-700 transition"
             onPointerDown={(event) => {
               setType("process");
               onDragStart(
@@ -144,7 +152,7 @@ export function Sidebar() {
 
           {/* Draggable Node 3: Output */}
           <div
-            className="dndnode output bg-[#FFFFFF] p-3 mb-3 rounded-2xl text-[#121710] cursor-grab shadow-md hover:bg-blue-700 transition"
+            className="dndnode output bg-[#FFFFFF] p-2 mb-3 rounded-xl text-[#121710] cursor-grab shadow-md hover:bg-blue-700 transition"
             onPointerDown={(event) => {
               setType("resources");
               onDragStart(
@@ -158,7 +166,7 @@ export function Sidebar() {
           </div>
          
         </div>
-            <Button className="w-[2vw] h-[2vw] p-[1vw]  " onClick={handleLogout}>Logout</Button>
+          
       </aside>
    
     </div>
