@@ -1,14 +1,43 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { auth, db } from "./FireBase.js";
 import { signOut } from "firebase/auth";
-import { addDoc, collection } from "firebase/firestore";
+import { collection, getDocs, query, orderBy } from "firebase/firestore";
+import { createNewProject, deleteProjectFromCloud } from "./ReadWriteService.js";
+import { FaTrash } from "react-icons/fa";
+import { CustomPrompt } from "./CustomPrompt.js"; // Ensure this matches your filename
 
 interface DashboardProps {
   user: any;
-  onOpenEditor: () => void;
+  onOpenEditor: (projectId?: string) => void;
 }
 
-function Dashboard(props: DashboardProps) {
+function Dashboard({ user, onOpenEditor }: DashboardProps) {
+  const [projects, setProjects] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // this codes[line no. 19- 36] entire job is to retrieve data from the cloud so it can be shown on the dashboard
+  const fetchProjects = async () => {   
+    if (!user) return;
+    try {
+      setLoading(true);
+      const projectsRef = collection(db, "users", user.uid, "projects");
+      const q = query(projectsRef, orderBy("updatedAt", "desc"));
+      const querySnapshot = await getDocs(q);
+      const projectData = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setProjects(projectData);
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchProjects();
+  }, [user]); //[user] it is a dependecy array , it tells useeffect that "theres a new user created u need to run again"
+
   const handleLogout = async () => {
     try {
       await signOut(auth);
@@ -17,25 +46,13 @@ function Dashboard(props: DashboardProps) {
     }
   };
 
-  // Create Project Logic
-  const handleNewProject = async () => {
-    if (!props.user) return;
-
+  const handleDeleteProject = async (e: React.MouseEvent, projectId: string) => {
+    e.stopPropagation();
     try {
-      const docRef = await addDoc(collection(db, "users", props.user.uid, "projects"), {
-        name: "New Untitled Project",
-        nodes: [],
-        edges: [],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      });
-
-      console.log("New project created with ID: ", docRef.id);
-      alert("New Project Created!");
-      props.onOpenEditor(); 
+      await deleteProjectFromCloud(user.uid, projectId);
+      setProjects((prev) => prev.filter((p) => p.id !== projectId));
     } catch (error) {
-      console.error("Error creating project:", error);
-      alert("Failed to create project");
+      console.error("Delete failed:", error);
     }
   };
 
@@ -43,27 +60,11 @@ function Dashboard(props: DashboardProps) {
     <div className="flex h-screen w-full bg-[#efefef]">
       {/* Sidebar */}
       <div className="w-1/5 bg-[#fbf9f9] border-r border-gray-300 shadow-sm flex flex-col justify-between">
-        <div>
-          <div className="bg-blue-300 p-4  text-gray-800 font-extralight">
-            {props.user.email}
-          </div>
-          <nav className="p-4">
-            <div className="text-sm font-medium text-gray-500 uppercase tracking-wider">
-              Menu
-            </div>
-            <ul className="mt-4 space-y-2">
-              <li className="bg-blue-100 text-blue-900 px-3 py-2 rounded-lg cursor-pointer font-medium">
-                XXFutureFeaturesXX
-              </li>
-            </ul>
-          </nav>
+        <div className="p-4 bg-blue-300 text-gray-800 font-extralight truncate">
+          {user.displayName}
         </div>
-
         <div className="p-1 border-t border-gray-200">
-          <button
-            className="w-full text-left p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
-            onClick={handleLogout}
-          >
+          <button className="w-full text-left p-2 text-gray-600 hover:bg-gray-100 rounded-lg cursor-pointer" onClick={handleLogout}>
             Logout
           </button>
         </div>
@@ -72,43 +73,40 @@ function Dashboard(props: DashboardProps) {
       {/* Main Content Area */}
       <div className="w-4/5 p-10 overflow-y-auto">
         <header className="mb-10">
-          <h1 className="text-3xl font-light text-gray-800 italic">
-            welcome, {props.user.email}
-          </h1>
+          <h1 className="text-3xl font-light text-gray-800 italic">Welcome, {user.displayName}</h1>
         </header>
 
-        {/* Project Grid Layout */}
         <div className="flex flex-wrap gap-6 items-start">
-          
-          {/* Existing Project Card */}
-          <button
-            className="group flex flex-col justify-between bg-white border border-gray-200 p-6 w-64 h-44 rounded-2xl shadow-sm hover:shadow-lg hover:border-blue-300 transition-all cursor-pointer text-left"
-            onClick={props.onOpenEditor}
-          >
-            <div>
-            
-              <h3 className="text-lg font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">
-                Your Project Name
-              </h3>
-            </div>
-            <div className="w-full text-[10px] font-medium p-2 bg-blue-50 rounded-lg text-blue-700 border border-blue-100">
-              Updated XX days ago
-            </div>
-          </button>
+          {projects.map((project) => (
+            <div key={project.id} className="relative group">
+              <button
+                onClick={(e) => handleDeleteProject(e, project.id)}
+                className="absolute top-3 right-3 z-10 p-2 bg-red-50 text-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white cursor-pointer shadow-sm"
+              >
+                <FaTrash size={12} />
+              </button>
 
-          {/* Create New Project Card */}
-          <button
-            className="flex flex-col justify-center items-center bg-gray-50 border-2 border-dashed border-gray-300 p-6 w-64 h-44 rounded-2xl cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-all group"
-            onClick={handleNewProject}
-          >
-            <div className="w-12 h-12 flex items-center justify-center bg-white rounded-full shadow-sm border border-gray-200 group-hover:border-blue-300 transition-all">
-              <span className="text-3xl text-gray-400 group-hover:text-blue-500 transition-colors">+</span>
+              <button
+                className="flex flex-col justify-between bg-white border border-gray-200 p-6 w-64 h-44 rounded-2xl shadow-sm hover:shadow-lg hover:border-blue-400 transition-all text-left"
+                onClick={() => onOpenEditor(project.id)}
+              >
+                <h3 className="text-lg font-semibold text-gray-800 truncate pr-6">{project.name || "Untitled Project"}</h3>
+                <div className="w-full text-[10px] font-medium p-2 bg-gray-50 rounded-lg text-gray-600 border border-gray-100">
+                  Created: {new Date(project.createdAt).toLocaleDateString()} at {new Date(project.createdAt).toLocaleTimeString()}
+                </div>
+              </button>
             </div>
-            <span className="text-sm font-semibold text-gray-500 group-hover:text-blue-600 mt-4">
-              Create New project
-            </span>
-          </button>
+          ))}
+
           
+          <CustomPrompt 
+            onSave={async (projectName: string) => {
+              if (!user) return;
+              const finalName = projectName.trim() || "Untitled Project";
+              const newId = await createNewProject(user.uid, user.email,  finalName);
+              onOpenEditor(newId); // Redirects to editor
+            }} 
+          />
         </div>
       </div>
     </div>
