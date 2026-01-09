@@ -11,7 +11,9 @@ import {
 import CustomHandle from "./CustomHandle.js";
 import { RxCross2 } from "react-icons/rx";
 
-type ProcessData = { ItemName: string; Quantity: number };
+type ProcessData = {
+  units: any; ItemName: string; Quantity: number 
+};
 
 export type ProcessNode = Node<ProcessData, "Process">;
 
@@ -20,7 +22,12 @@ const Process = ({ data, id }: NodeProps<ProcessNode>) => {
   const [Hovered, setHovered] = useState(false);
   const [AttriHover, setAttriHover] = useState(false);
   const { ItemName, Quantity } = data;
-  const AttriData =["Mass/Weight","Length","Width","Height"]
+const attributeConfigs = [
+    { label: "Weight / Mass", key: "Quantity", options: ["g", "kg", "lb"] },
+    { label: "Length", key: "Length", options: ["cm", "m", "inch"] },
+    { label: "Width", key: "Width", options: ["cm", "m", "inch"] },
+    { label: "Height", key: "Height", options: ["cm", "m", "inch"] },
+  ];
   const onChange = useCallback((evt: React.ChangeEvent<HTMLInputElement>) => {
     console.log(evt.target.value);
 
@@ -46,9 +53,17 @@ const Process = ({ data, id }: NodeProps<ProcessNode>) => {
     );
   };
 
+  function updateField(key: string, arg1: number): void {
+    throw new Error("Function not implemented.");
+  }
+
+  function updateUnit(key: string, value: string): void {
+    throw new Error("Function not implemented.");
+  }
+
   return (
     <div className="w-full h-full ">
-      <div className="ProductNode w-20px h-10px rounded-3xl bg-[#0E6EF7] text-white shadow-2xl">
+      <div className="ProcessNode w-20px h-10px rounded-3xl bg-[#0E6EF7] text-white shadow-2xl">
         <div className="multiPurposeButton  p-2">
           <button
             className={`
@@ -77,7 +92,7 @@ const Process = ({ data, id }: NodeProps<ProcessNode>) => {
               />
               <GoTasklist
                 className="AtrributeIcon w-6.5 h-6.5 cursor-pointer text-[#353535] bg-[#c7c7c7] rounded-full p-1 m-2"
-                onClick={()=> setAttriHover(!AttriHover)} onDoubleClick={()=>  setAttriHover(!AttriHover)}
+                onClick={()=> setAttriHover(!AttriHover)} 
               />
             </div>
           </button>
@@ -95,40 +110,33 @@ const Process = ({ data, id }: NodeProps<ProcessNode>) => {
           </div>
         </div>
       </div>
-    {AttriHover && (
-  <div 
-    className="absolute top-16 left-0 z-50 p-3 w-48 bg-white shadow-xl rounded-xl border border-gray-100 flex flex-col gap-2"
-    onMouseEnter={() => setAttriHover(true)} 
-    onMouseLeave={() => setAttriHover(false)}
-  >
-    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
-      Weight / Mass
-    </label>
-    <div className="flex items-center gap-2 bg-gray-50 p-2 rounded-md border border-gray-200">
-      <input
-        type="number"
-        placeholder="0"
-        className="nodrag w-full bg-transparent text-sm outline-none text-gray-700"
-        defaultValue={data.Quantity || ""}
-        onChange={(e) => {
-          const val = parseFloat(e.target.value);
-          setNodes((nodes) =>
-            nodes.map((n) => {
-              if (n.id === id) {
-                return { ...n, data: { ...n.data, Quantity: val } };
-              }
-              return n;
-            })
-          );
-        }}
-      />
-      <span className="text-gray-400 font-medium text-sm border-l pl-2 border-gray-300">
-        g
-      </span>
-    </div>
-    
-  </div>
-)}
+   {AttriHover && (
+            <div className="absolute top-10 left-0 z-50 p-4 w-60 bg-white shadow-2xl rounded-2xl border border-gray-100 flex flex-col gap-4 text-gray-800">
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Attributes</p>
+              
+              {/* 3. LOOP through your configs instead of copy-pasting */}
+              {attributeConfigs.map((config) => (
+                <div key={config.key} className="flex flex-col gap-1">
+                  <label className="text-[9px] text-gray-500 font-medium">{config.label}</label>
+                  <div className="flex items-center gap-2 bg-gray-50 p-2 rounded-lg border border-gray-100">
+                    <input
+                      type="number"
+                      className="nodrag w-full bg-transparent text-sm outline-none"
+                      defaultValue={data[config.key as keyof ProcessData]}
+                      onChange={(e) => updateField(config.key, parseFloat(e.target.value))}
+                    />
+                    <select 
+                      className="nodrag bg-transparent text-[10px] font-bold text-blue-500 outline-none cursor-pointer border-l pl-2 border-gray-300"
+                      value={data.units?.[config.key] || config.options[0]}
+                      onChange={(e) => updateUnit(config.key, e.target.value)}
+                    >
+                      {config.options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                    </select>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
       <CustomHandle
         className=""
         type="source"
