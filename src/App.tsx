@@ -1,4 +1,5 @@
-import { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect } from "react";
+import { ClimbingBoxLoader } from "react-spinners";
 import {
   ReactFlow,
   applyNodeChanges,
@@ -16,23 +17,20 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
-//Firebase imports
-import { auth, db, realtimeDb } from "./FireBase.js";
-import { ref, set, get } from "firebase/database"; // Realtime DB imports
+// Firebase imports
+import { auth, db } from "./FireBase.js";
 import { onAuthStateChanged, type User } from "firebase/auth";
-import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from "firebase/firestore"; 
+import { doc, getDoc, setDoc } from "firebase/firestore";
+
+// Component imports
 import { DnDProvider } from "./useDnD.js";
 import { Sidebar } from "./SideBar.js";
 import ButtonEdge from "./ButtonEdge.js";
-
 import Product from "./Product.js";
 import Process from "./Process.js";
 import Resources from "./Resources.js";
 import Auth from "./Auth.js";
-import { doc, getDoc, setDoc } from "firebase/firestore";
 import Dashboard from "./Dashboard.js";
-import { FaArrowLeft } from "react-icons/fa";
-
 
 const nodeTypes = {
   product: Product,
@@ -43,63 +41,60 @@ const nodeTypes = {
 const edgeTypes = {
   buttonEdge: ButtonEdge,
 };
-//intial nodes set to null
+
 const initialNodes: Node[] = [];
 
-function FlowContent({ user, onBack }: { user: User; onBack: () => void }) {
-  const initialEdges: Edge[] = [];
-  const [nodes, setNodes] = useState(initialNodes);
-  const [edges, setEdges] = useState<Edge[]>(initialEdges);
+// --- INTERNAL FLOWCONTENT COMPONENT ---
+function FlowContent({ 
+  user, 
+  projectId, // Added projectId prop
+  onBack 
+}: { 
+  user: User; 
+  projectId: string | null; 
+  onBack: () => void 
+}) {
+  const [nodes, setNodes] = useState<Node[]>(initialNodes);
+  const [edges, setEdges] = useState<Edge[]>([]);
 
-  // Retrieve Data from Realtime Database
+  // HELPER: This creates the correct path based on whether a project is open
+  const getProjectDocRef = () => {
+    if (projectId) {
+      // Path for a specific project created via Dashboard
+      return doc(db, "users", user.uid, "projects", projectId);
+    } else {
+      // Path for the "Main Workspace"
+      return doc(db, "users", user.uid);
+    }
+  };
+
   const RetriveData = useCallback(async () => {
-    if (!user) return; // Guard clause to ensure user exists
+    if (!user) return;
 
     try {
-      // Create a reference to the specific user's document
-
-      const docRef = doc(db, "users", user.uid);
-
-      // Fetch the document snapshot
+      const docRef = getProjectDocRef();
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
-        // 3. Extract the data using .data()
         const data = docSnap.data();
-        console.log("Retrieved data from Firestore:", data);
-
-        // 4. Set your nodes and edges state
-        const RetrievedNodes = data.nodes || [];
-        const RetrievedEdges = data.edges || [];
-
-        setNodes(RetrievedNodes);
-        setEdges(RetrievedEdges);
-        alert("Data Restored from Firestore!");
+        setNodes(data.nodes || []);
+        setEdges(data.edges || []);
+        console.log("Data loaded from:", projectId ? `Project ${projectId}` : "Main Workspace");
       } else {
-        console.log("No document found for this user in Firestore.");
+        console.log("No existing data found at this path.");
       }
     } catch (error) {
-      console.error("Error retrieving data from Firestore:", error);
+      console.error("Error retrieving data:", error);
     }
-  }, [user, setNodes, setEdges]);
+  }, [user, projectId]);
 
-  //  Save Data to Realtime Database
   const SaveData = useCallback(async () => {
-    if (!user) {
-      alert("No user logged in.");
-      return;
-    }
+    if (!user) return;
 
     try {
-      // Create a reference to the user's specific document
-      // Path: users/{user.uid}
-      const userDocRef = doc(db, "users", user.uid);
-
-      //  Use setDoc to write the data
-      // setDoc with { merge: true } works like an update if the doc exists,
-      // or creates it if it doesn't.
+      const docRef = getProjectDocRef();
       await setDoc(
-        userDocRef,
+        docRef,
         {
           nodes: nodes,
           edges: edges,
@@ -108,26 +103,30 @@ function FlowContent({ user, onBack }: { user: User; onBack: () => void }) {
         },
         { merge: true }
       );
-
-      console.log("Saved to Cloud Firestore!");
-      alert("Data Saved to the Cloud!");
+      alert("Saved Successfully!");
     } catch (error) {
-      console.error("Error saving to Firestore:", error);
-      alert("Failed to save data.");
+      console.error("Error saving data:", error);
+      alert("Save failed.");
     }
-  }, [nodes, edges, user]);
+  }, [nodes, edges, user, projectId]);
+
+  // // AUTOMATIC LOAD: This loads the data as soon as the editor opens
+  // useEffect(() => {
+  //   RetriveData();
+  // }, [RetriveData]);
 
   const onNodesChange: OnNodesChange = useCallback(
     (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
     []
   );
 
-  const onEdgesChange: OnEdgesChange = useCallback((changes) => {
-    setEdges((eds) => applyEdgeChanges(changes, eds));
-  }, []);
+  const onEdgesChange: OnEdgesChange = useCallback(
+    (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
+    []
+  );
 
   const onConnect: OnConnect = useCallback(
-    async (params) => {
+    (params) => {
       const updatedEdges = addEdge(
         {
           ...params,
@@ -139,24 +138,29 @@ function FlowContent({ user, onBack }: { user: User; onBack: () => void }) {
       );
       setEdges(updatedEdges);
     },
-    [edges, setEdges]
+    [edges]
   );
 
   return (
     <div className="w-screen h-screen bg-[#ffffff]">
-      <Sidebar onBack={onBack}   />
-      <button
-        className="cursor-pointer absolute bottom-[2vw] left-[50vw] w-[10vw] h-[5vw] z-50 bg-[#ffffff] rounded-3xl"
-        onClick={RetriveData}
-      >
-        Get your progress
-      </button>
-      <button
-        className="cursor-pointer absolute bottom-[2vw] left-[60vw] w-[10vw] h-[5vw] z-50 bg-[#353535] text-white rounded-3xl"
-        onClick={SaveData}
-      >
-        Save to the Cloud
-      </button>
+      <Sidebar onBack={onBack} />
+      
+      {/* Floating Action Buttons */}
+      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex gap-4">
+        <button
+          className="px-6 py-3 bg-white border border-gray-300 rounded-full shadow-lg hover:bg-gray-50 cursor-pointer text-sm font-medium"
+          onClick={RetriveData}
+        >
+          Retrieve Data
+        </button>
+        <button
+          className="px-6 py-3 bg-[#353535] text-white rounded-full shadow-lg hover:bg-black cursor-pointer text-sm font-medium"
+          onClick={SaveData}
+        >
+          Save to Cloud
+        </button>
+      </div>
+
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -167,25 +171,19 @@ function FlowContent({ user, onBack }: { user: User; onBack: () => void }) {
         onConnect={onConnect}
         className="w-screen h-screen"
       >
-        <Background
-          id="2"
-          gap={50}
-          color="#BDBDBD"
-          variant={BackgroundVariant.Cross}
-        />
-        <Controls
-          position="bottom-right"
-          className="bg-[white] shadow-4xl rounded-xl m-4 p-1 overflow-hidden"
-        ></Controls>
+        <Background gap={50} color="#BDBDBD" variant={BackgroundVariant.Cross} />
+        <Controls position="bottom-right" className="bg-white shadow-xl rounded-xl m-4 p-1" />
       </ReactFlow>
     </div>
   );
 }
 
+// --- MAIN APP COMPONENT ---
 export default function App() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [currentProjectId, setCurrentProjectId] = useState<string | null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -194,55 +192,55 @@ export default function App() {
 
       if (currentUser) {
         try {
-          // 1. Create a reference to the user document in the "users" collection
           const userDocRef = doc(db, "users", currentUser.uid);
-
-          // 2. Check if the document already exists
           const userSnapshot = await getDoc(userDocRef);
 
           if (!userSnapshot.exists()) {
-            // 3. Initialize the document if it doesn't exist
             await setDoc(userDocRef, {
+              name : currentUser.displayName || "Anonymous",
               email: currentUser.email,
               uid: currentUser.uid,
               nodes: [],
               edges: [],
               createdAt: new Date().toISOString(),
             });
-            console.log("Firestore user profile created");
           }
         } catch (err) {
-          console.error("Error creating Firestore profile:", err);
+          console.error("Error creating profile:", err);
         }
       }
     });
     return () => unsubscribe();
   }, []);
 
-  if (loading)
-    return (
-      <div className="text-center mt-20 text-xl font-bold">Loading...</div>
-    );
+  if (loading) return <div className="flex items-center justify-center   mt-20 text-4xl font-bold"> <ClimbingBoxLoader color="#7f7fff" /></div>;
 
-  if (!user) {
-    //if the user is nor present of not signed in then go to Auth component
-    return <Auth />;
-  }
+  if (!user) return <Auth />;
 
   if (isEditorOpen) {
     return (
       <ReactFlowProvider>
         <DnDProvider>
-          <FlowContent user={user}  onBack={() => setIsEditorOpen(false)} />
+          <FlowContent 
+            user={user} 
+            projectId={currentProjectId} 
+            onBack={() => {
+              setIsEditorOpen(false);
+              setCurrentProjectId(null); // Clear ID when closing
+            }} 
+          />
         </DnDProvider>
       </ReactFlowProvider>
     );
-    
   }
+
   return (
-  <Dashboard 
-    user={user} 
-    onOpenEditor={() => setIsEditorOpen(true)} 
-  />
-);
+    <Dashboard 
+      user={user} 
+      onOpenEditor={(id?: string) => {
+        setCurrentProjectId(id || null);
+        setIsEditorOpen(true);
+      }} 
+    />
+  );
 }

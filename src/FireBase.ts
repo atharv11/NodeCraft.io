@@ -4,14 +4,13 @@ import { getDatabase } from "firebase/database";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBLYqbv86eXuxtj-xu55Tv6eIf_6UIP88A",
-  authDomain: "nodecraft-4eb6e.firebaseapp.com",
-  databaseURL: "https://nodecraft-4eb6e-default-rtdb.firebaseio.com",
-  projectId: "nodecraft-4eb6e",
-  storageBucket: "nodecraft-4eb6e.firebasestorage.app",
-  messagingSenderId: "631021036908",
-  appId: "1:631021036908:web:64b81b7cf31421f5ccff49",
-  measurementId: "G-WMKXEZBE1N"
+  apiKey: "AIzaSyBOQmLgKSaGgX6lKVZsWkKK887kmJUkblo",
+  authDomain: "nodecraftv2.firebaseapp.com",
+  projectId: "nodecraftv2",
+  storageBucket: "nodecraftv2.firebasestorage.app",
+  messagingSenderId: "527178901504",
+  appId: "1:527178901504:web:17851f5951f5c5e2a210e5",
+  measurementId: "G-V1LDHW7ER1"
 };
 
 const app = initializeApp(firebaseConfig);
