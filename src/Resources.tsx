@@ -1,9 +1,11 @@
 //previously this file name was Payment Providers
 
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { Handle, Position, useReactFlow, type Node, type NodeProps } from "@xyflow/react";
 import { RxCross2 } from "react-icons/rx";
 import CustomHandle from "./CustomHandle.js";
+import { TbLayoutGridAdd } from "react-icons/tb";
+import { GoTasklist } from "react-icons/go";
 
 // 1. Define the specific shape of the data prop
 type ResourcesData = { name: string };
@@ -17,6 +19,8 @@ const Resources = ({ data, id }: NodeProps<ResourcesNode>) => {
   const { name } = data;
   
   const { setNodes } = useReactFlow();
+  const [Hovered, setHovered] = useState(false);
+  const [AttriHover, setAttriHover] = useState(false);
   
 
    const onChange = useCallback((evt: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,10 +42,40 @@ const Resources = ({ data, id }: NodeProps<ResourcesNode>) => {
 return (
   <div className="w-full h-full">
   
-        <div className="ResourcesNode w-20px h-10px rounded-3xl bg-[#FFFFFF] text-white shadow-2xl">
-          <div className="multiPurposeButton pl-[15vw] p-2">
-          <RxCross2 className="w-[2.5vw] h-[2.5vw] cursor-pointer text-[#FFFFFF] bg-[#0E6EF7] rounded-full p-1" onClick={handleDelete} />
-          </div>
+        <div className="ResourcesNode w-20px h-10px rounded-3xl bg-[#bfbfbf] text-white shadow-2xl">
+          <div className="multiPurposeButton  p-2">
+                    <button
+                      className={`
+                      bg-white text-[#353535] rounded-full h-10 flex 
+                      transition-all duration-300 shadow-md overflow-hidden
+                      ${Hovered ? "w-45" : "w-10"} 
+                    `}
+                      onMouseEnter={() => setHovered(true)}
+                      onMouseLeave={() => setHovered(false)}
+                    >
+                      <TbLayoutGridAdd
+                        className={` ${
+                          Hovered
+                            ? "w-0 opacity-0"
+                            : "w-6 h-6 cursor-pointer text-[#353535] bg-[#c7c7c7] rounded-full p-1 m-2"
+                        }`}
+                      />
+                      <div
+                        className={`flex  ${
+                          Hovered ? "w-auto opacity-100 mr-2" : "w-0 opacity-0 mr-0"
+                        }`}
+                      >
+                        <RxCross2
+                          className="DeleteIcon w-6 h-6 cursor-pointer text-[#353535] bg-[#c7c7c7] rounded-full p-1 m-2"
+                          onClick={handleDelete}
+                        />
+                        <GoTasklist
+                          className="AtrributeIcon w-6.5 h-6.5 cursor-pointer text-[#353535] bg-[#c7c7c7] rounded-full p-1 m-2"
+                          onMouseEnter={()=> setAttriHover(!AttriHover)} onMouseLeave={()=>  setAttriHover(!AttriHover)}
+                        />
+                      </div>
+                    </button>
+                  </div>
             <div className="bg-[#353535] text-updater-node rounded-3xl p-3">
           <div>         
          

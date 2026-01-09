@@ -7,11 +7,11 @@ import { signOut } from "firebase/auth";
 import { auth } from "./FireBase.js";
 import { FaArrowLeft } from "react-icons/fa";
 import Dashboard from "./Dashboard.js";
-
+import { nanoid } from 'nanoid';
 
 // This is a simple ID generator for the nodes.
 let id = 0;
-const getId = () => `dndnode_${id++}`;
+
 
 // --- DragGhost Component (Fixed Positioning and Transparency) ---
 
@@ -70,7 +70,7 @@ export function Sidebar({onBack}: SidebarProps) {
       return ({ position }: { position: XYPosition }) => {
         // here the new node is created every time dragged from the sidebar window
         const newNode = {
-          id: getId(),
+        id: nanoid(),
           type: nodeType,
           position,
           data: { label: `${nodeType} node` },
@@ -87,7 +87,7 @@ export function Sidebar({onBack}: SidebarProps) {
       return ({ position }: { position: XYPosition }) => {
         // this is wehre the new edge is created
         const newEdge = {
-          id: getId(),
+        id: nanoid(),
           type: edgeTypes,
           position,
           data: { label: `${edgeTypes} node` },
@@ -99,76 +99,92 @@ export function Sidebar({onBack}: SidebarProps) {
     },
     [setNodes, setType]
   );
-   //LOGOUT FUNCTION 
-  // const handleLogout = useCallback(async () => {
-  //   try {
-  //     await signOut(auth); 
-  //   } catch (error) {
-  //     console.error("Error logging out:", error);
-  //   }
-  // }, []);
+
 
   return (
-    // Outer container for the sidebar layout
-    <div className="fixed bottom-[.05vw]  m-2 z-40 w-[15vw] h-[35vw] ">
-      {/* The ghost node will be rendered at pointer position when dragging. 
-          It must be rendered inside the provider chain (App -> DnDProvider -> FlowContent -> Sidebar) */}
-      {isDragging && <DragGhost type={type} />}
+  <div className="fixed bottom-4 left-4 z-40 w-[16vw] h-[38vw] min-w-[180px]">
+    {/* Render the ghost node during drag */}
+    {isDragging && <DragGhost type={type} />}
 
-      <aside className="bg-[#333333]   text-xs h-full rounded-4xl shadow-xl ">
-        <FaArrowLeft className="bg-[#ffffff]  rounded-full p-1 text-xl absolute  right-2 top-2 z-22 cursor-pointer" onClick={onBack}/>
-        <div className="flex items-center bg-[#0E6EF7]  w-full h-[7.5vw] mb-4 text-white text-sm rounded-xl p-4">
-           <div className=" w-2 h-2   rounded-full border-[1.15vw] rotate-135 border-white border-t-transparent"></div> 
-         
+    <aside className="flex flex-col bg-[#1A1A1A] h-full rounded-2xl shadow-2xl  border-[#333333] overflow-hidden">
+      
+      {/* Blue Header Section */}
+      <div className="relative bg-[#0E6EF7] p-4 h-[6vw] min-h-[60px] flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          {/* Your custom spinning/rotated icon */}
+          <span className="text-white font-bold text-sm tracking-wide">ProjectFile Name</span>
         </div>
-        <div className="p-4 ">
-          {/* Draggable Node 1: Input */}
-          <div
-            className="dndnode input bg-[#FFFFFF] p-2 mb-3 rounded-xl text-[#121710] cursor-grab shadow-md hover:bg-red-700 transition "
-            onPointerDown={(event) => {
-              setType("Product");
-              onDragStart(
-                event as React.PointerEvent<HTMLDivElement>,
-                createAddNewNode("product")
-              );
-            }}
-          >
-            Product
-          </div>
+        
+        {/* Back Button - Redesigned to be subtle */}
+       
+      </div>
 
-          {/* Draggable Node 2: Default */}
-          <div
-            className="dndnode bg-[#FFFFFF] p-2 mb-3 rounded-xl text-[#121710] cursor-grab shadow-md hover:bg-yellow-700 transition"
-            onPointerDown={(event) => {
-              setType("process");
-              onDragStart(
-                event as React.PointerEvent<HTMLDivElement>,
-                createAddNewNode("process")
-              );
-            }}
-          >
-            Process
-          </div>
+      {/* Content Section */}
+      <div className="p-4 flex-1 flex flex-col gap-3">
+        <p className="text-[#888888] text-[10px] uppercase font-bold tracking-widest mb-1">
+          Components
+        </p>
 
-          {/* Draggable Node 3: Output */}
-          <div
-            className="dndnode output bg-[#FFFFFF] p-2 mb-3 rounded-xl text-[#121710] cursor-grab shadow-md hover:bg-blue-700 transition"
-            onPointerDown={(event) => {
-              setType("resources");
-              onDragStart(
-                event as React.PointerEvent<HTMLDivElement>,
-                createAddNewNode("resources"),
-                
-              );
-            }}
-          >
-            Resources
-          </div>
-         
+        {/* Draggable Node 1: Product */}
+        <div
+          className="group flex items-center justify-between bg-[#262626] p-3 rounded-xl text-gray-200 cursor-grab border border-transparent hover:border-[#0E6EF7] hover:bg-[#2d2d2d] transition-all duration-200 shadow-sm"
+          onPointerDown={(event) => {
+            setType("Product");
+            onDragStart(
+              event as React.PointerEvent<HTMLDivElement>,
+              createAddNewNode("product")
+            );
+          }}
+        >
+          <span className="text-sm font-medium">Product</span>
+          <div className="w-1.5 h-1.5 rounded-full bg-[#0E6EF7] opacity-0 group-hover:opacity-100 transition-opacity"></div>
         </div>
-          
-      </aside>
-   
-    </div>
-  );
+
+        {/* Draggable Node 2: Process */}
+        <div
+          className="group flex items-center justify-between bg-[#262626] p-3 rounded-xl text-gray-200 cursor-grab border border-transparent hover:border-[#0E6EF7] hover:bg-[#2d2d2d] transition-all duration-200 shadow-sm"
+          onPointerDown={(event) => {
+            setType("process");
+            onDragStart(
+              event as React.PointerEvent<HTMLDivElement>,
+              createAddNewNode("process")
+            );
+          }}
+        >
+          <span className="text-sm font-medium">Process</span>
+          <div className="w-1.5 h-1.5 rounded-full bg-[#0E6EF7] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        </div>
+
+        {/* Draggable Node 3: Resources */}
+        <div
+          className="group flex items-center justify-between bg-[#262626] p-3 rounded-xl text-gray-200 cursor-grab border border-transparent hover:border-[#0E6EF7] hover:bg-[#2d2d2d] transition-all duration-200 shadow-sm"
+          onPointerDown={(event) => {
+            setType("resources");
+            onDragStart(
+              event as React.PointerEvent<HTMLDivElement>,
+              createAddNewNode("resources")
+            );
+          }}
+        >
+          <span className="text-sm font-medium">Resources</span>
+          <div className="w-1.5 h-1.5 rounded-full bg-[#0E6EF7] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        </div>
+      </div>
+       <button 
+          onClick={onBack}
+          className="bg-white/7 hover:bg-white/20 text-white p-1.5 rounded-lg transition-colors cursor-pointer"
+          title="Go Back"
+        >
+          <FaArrowLeft size={14} />
+        </button>
+
+      {/* Subtle Footer info */}
+      <div className="p-4 bg-[#141414] border-t border-[#262626]">
+        <div className="text-[9px] text-gray-500 text-center uppercase tracking-tighter">
+          Drag nodes onto the canvas
+        </div>
+      </div>
+    </aside>
+  </div>
+);
 }

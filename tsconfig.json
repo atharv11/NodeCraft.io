@@ -1,5 +1,9 @@
+
+
 {
   // Visit https://aka.ms/tsconfig to read more about this file
+ 
+ 
   "compilerOptions": {
     // File Layout
     // "rootDir": "./src",
@@ -7,6 +11,10 @@
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
     "module": "nodenext",
     "target": "esnext",
     "types": [],
