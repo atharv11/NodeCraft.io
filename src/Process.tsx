@@ -1,4 +1,3 @@
-//name of this component was PaymentCountry before
 
 import { GoTasklist } from "react-icons/go";
 import { TbLayoutGridAdd } from "react-icons/tb";
@@ -21,6 +20,7 @@ const Process = ({ data, id }: NodeProps<ProcessNode>) => {
   const [Hovered, setHovered] = useState(false);
   const [AttriHover, setAttriHover] = useState(false);
   const { ItemName, Quantity } = data;
+  const AttriData =["Mass/Weight","Length","Width","Height"]
   const onChange = useCallback((evt: React.ChangeEvent<HTMLInputElement>) => {
     console.log(evt.target.value);
 
@@ -77,7 +77,7 @@ const Process = ({ data, id }: NodeProps<ProcessNode>) => {
               />
               <GoTasklist
                 className="AtrributeIcon w-6.5 h-6.5 cursor-pointer text-[#353535] bg-[#c7c7c7] rounded-full p-1 m-2"
-                onMouseEnter={()=> setAttriHover(!AttriHover)} onMouseLeave={()=>  setAttriHover(!AttriHover)}
+                onClick={()=> setAttriHover(!AttriHover)} onDoubleClick={()=>  setAttriHover(!AttriHover)}
               />
             </div>
           </button>
@@ -95,11 +95,40 @@ const Process = ({ data, id }: NodeProps<ProcessNode>) => {
           </div>
         </div>
       </div>
-      {AttriHover && (
-        <div className="absolute top-16 left-0 z-50 flex items-center justify-center p-2 w-40 h-atuo bg-white shadow-xs rounded-lg border border-gray-200">
-          <p className="text-black text-xs">Attributes List Here...</p>
-        </div>
-      )}
+    {AttriHover && (
+  <div 
+    className="absolute top-16 left-0 z-50 p-3 w-48 bg-white shadow-xl rounded-xl border border-gray-100 flex flex-col gap-2"
+    onMouseEnter={() => setAttriHover(true)} 
+    onMouseLeave={() => setAttriHover(false)}
+  >
+    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+      Weight / Mass
+    </label>
+    <div className="flex items-center gap-2 bg-gray-50 p-2 rounded-md border border-gray-200">
+      <input
+        type="number"
+        placeholder="0"
+        className="nodrag w-full bg-transparent text-sm outline-none text-gray-700"
+        defaultValue={data.Quantity || ""}
+        onChange={(e) => {
+          const val = parseFloat(e.target.value);
+          setNodes((nodes) =>
+            nodes.map((n) => {
+              if (n.id === id) {
+                return { ...n, data: { ...n.data, Quantity: val } };
+              }
+              return n;
+            })
+          );
+        }}
+      />
+      <span className="text-gray-400 font-medium text-sm border-l pl-2 border-gray-300">
+        g
+      </span>
+    </div>
+    
+  </div>
+)}
       <CustomHandle
         className=""
         type="source"

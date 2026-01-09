@@ -7,11 +7,11 @@ import { signOut } from "firebase/auth";
 import { auth } from "./FireBase.js";
 import { FaArrowLeft } from "react-icons/fa";
 import Dashboard from "./Dashboard.js";
-
+import { nanoid } from 'nanoid';
 
 // This is a simple ID generator for the nodes.
 let id = 0;
-const getId = () => `dndnode_${id++}`;
+
 
 // --- DragGhost Component (Fixed Positioning and Transparency) ---
 
@@ -70,7 +70,7 @@ export function Sidebar({onBack}: SidebarProps) {
       return ({ position }: { position: XYPosition }) => {
         // here the new node is created every time dragged from the sidebar window
         const newNode = {
-          id: getId(),
+        id: nanoid(),
           type: nodeType,
           position,
           data: { label: `${nodeType} node` },
@@ -87,7 +87,7 @@ export function Sidebar({onBack}: SidebarProps) {
       return ({ position }: { position: XYPosition }) => {
         // this is wehre the new edge is created
         const newEdge = {
-          id: getId(),
+        id: nanoid(),
           type: edgeTypes,
           position,
           data: { label: `${edgeTypes} node` },
