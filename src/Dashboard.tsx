@@ -8,7 +8,7 @@ import { CustomPrompt } from "./CustomPrompt.js"; // Ensure this matches your fi
 
 interface DashboardProps {
   user: any;
-  onOpenEditor: (projectId?: string) => void;
+  onOpenEditor: (projectId: string) => void;
 }
 
 function Dashboard({ user, onOpenEditor }: DashboardProps) {
@@ -59,12 +59,15 @@ function Dashboard({ user, onOpenEditor }: DashboardProps) {
   return (
     <div className="flex h-screen w-full bg-[#efefef]">
       {/* Sidebar */}
-      <div className="w-1/5 bg-[#fbf9f9] border-r border-gray-300 shadow-sm flex flex-col justify-between">
-        <div className="p-4 bg-blue-300 text-gray-800 font-extralight truncate">
-          {user.displayName}
+      <div className="w-1/5 bg-[linear-gradient(to_bottom,#E0F2FE,transparent)] border-r-2  border-white  flex flex-col gap-2">
+        <div className="p-4  text-gray-800 font-extralight truncate">
+          NodeCraft.io
         </div>
+        <div className="w-full text-left p-2 text-gray-600 hover:bg-gray-100 rounded-lg cursor-pointer text-lg">Account</div>
+         <div className="w-full text-left p-2 text-gray-600 hover:bg-gray-100 rounded-lg cursor-pointer text-lg">Trash</div>
+          <div className="w-full text-left p-2 text-gray-600 hover:bg-gray-100 rounded-lg cursor-pointer text-lg">Account</div>
         <div className="p-1 border-t border-gray-200">
-          <button className="w-full text-left p-2 text-gray-600 hover:bg-gray-100 rounded-lg cursor-pointer" onClick={handleLogout}>
+          <button className="w-full text-left p-2 text-gray-600 hover:bg-gray-100 rounded-lg cursor-pointer text-sm" onClick={handleLogout}>
             Logout
           </button>
         </div>
@@ -78,16 +81,16 @@ function Dashboard({ user, onOpenEditor }: DashboardProps) {
 
         <div className="flex flex-wrap gap-6 items-start">
           {projects.map((project) => (
-            <div key={project.id} className="relative group">
+            <div key={project.id} className="relative group ">
               <button
-                onClick={(e) => handleDeleteProject(e, project.id)}
+                onClick={(e) => handleDeleteProject(e, project.id )}
                 className="absolute top-3 right-3 z-10 p-2 bg-red-50 text-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white cursor-pointer shadow-sm"
               >
                 <FaTrash size={12} />
               </button>
 
               <button
-                className="flex flex-col justify-between bg-white border border-gray-200 p-6 w-64 h-44 rounded-2xl shadow-sm hover:shadow-lg hover:border-blue-400 transition-all text-left"
+                className="flex flex-col justify-between  border-2 border-white cursor-pointer bg-[linear-gradient(to_bottom,#F3F4F6,transparent)] p-6 w-64 h-44 rounded-2xl shadow-sm hover:shadow-lg hover:border-white transition-all text-left"
                 onClick={() => onOpenEditor(project.id)}
               >
                 <h3 className="text-lg font-semibold text-gray-800 truncate pr-6">{project.name || "Untitled Project"}</h3>
@@ -104,7 +107,7 @@ function Dashboard({ user, onOpenEditor }: DashboardProps) {
               if (!user) return;
               const finalName = projectName.trim() || "Untitled Project";
               const newId = await createNewProject(user.uid, user.email,  finalName);
-              onOpenEditor(newId); // Redirects to editor
+              onOpenEditor(newId ); // Redirects to editor
             }} 
           />
         </div>

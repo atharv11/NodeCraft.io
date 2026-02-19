@@ -31,9 +31,9 @@ export function CustomPrompt({ onSave }: CustomPromptProps) {
         {/* Your original 'Create New Project' Card Styling */}
         <button
           title="Click to create new project"
-          className="flex flex-col justify-center items-center bg-gray-50 border-2 border-dashed border-gray-300 p-6 w-64 h-44 rounded-2xl cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-all group"
+          className="flex flex-col justify-center border-3  bg-[linear-gradient(to_bottom,#F3F4F6,transparent)]   shadow-sm hover:shadow-lg  text-left items-center bg-gray-50  border-dashed border-white p-6 w-64 h-44 rounded-2xl cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-all group"
         >
-          <div className="w-12 h-12 flex items-center justify-center bg-white rounded-full shadow-sm border border-gray-200 group-hover:scale-110 transition-transform">
+          <div className="w-12 h-12 flex items-center justify-center bg-white rounded-full shadow-sm border border-gray-200 group-hover:scale-110  transition-transform">
             <span className="text-3xl text-gray-400 group-hover:text-blue-500">+</span>
           </div>
           <span className="text-sm font-semibold text-gray-500 mt-4 group-hover:text-blue-600">

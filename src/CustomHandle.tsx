@@ -1,7 +1,5 @@
 import React, { type FC } from "react";
 import { Handle, type HandleProps } from "@xyflow/react";
-import { freemem } from "node:os";
-
 const CustomHandle: FC<HandleProps> = ({ style, ...props }) => {
   return (
     <Handle
