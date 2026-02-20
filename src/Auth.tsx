@@ -32,10 +32,22 @@ export default function Auth() {
     }
   };
 
-  useEffect(() => {
+useEffect(() => {
   if (videoRef.current) {
-    videoRef.current.defaultMuted = true;
+    // 1. Force the muted property at the DOM level
     videoRef.current.muted = true;
+    // 2. Some browsers specifically look for this property
+    videoRef.current.defaultMuted = true;
+    
+    // 3. Manually trigger play to bypass the "autoplay-block"
+    const playPromise = videoRef.current.play();
+    
+    if (playPromise !== undefined) {
+      playPromise.catch((error) => {
+        // This usually triggers if the phone is in Low Power Mode
+        console.log("Autoplay prevented by mobile settings:", error);
+      });
+    }
   }
 }, []);
 
@@ -49,6 +61,7 @@ export default function Auth() {
         {/* Header Section */}
         <div className="relative w-full h-32 sm:h-40 flex items-center justify-center bg-gray-800">
           <video 
+            ref={videoRef}
             className="absolute top-0 left-0 w-full h-full object-cover z-0" 
             src="/Pink_gradient.mp4" 
             autoPlay 

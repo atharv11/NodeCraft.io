@@ -57,7 +57,7 @@ function FlowContent({
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
   const [edges, setEdges] = useState<Edge[]>([]);
 
-  // HELPER: This creates the correct path based on whether a project is open
+  
   const getProjectDocRef = () => {
     if (projectId) {
       // Path for a specific project created via Dashboard
