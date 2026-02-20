@@ -1,10 +1,7 @@
 import { useReactFlow, type XYPosition } from "@xyflow/react";
 import { useCallback, useState } from "react";
-// NOTE: Assuming this file exists and contains OnDropAction, useDnD, useDnDPosition
 import { type OnDropAction, useDnD, useDnDPosition } from "./useDnD.js";
 import Button from "@mui/material/Button";
-import { signOut } from "firebase/auth";
-import { auth } from "./FireBase.js";
 import { FaArrowLeft } from "react-icons/fa";
 import Dashboard from "./Dashboard.js";
 import { nanoid } from 'nanoid';
@@ -106,7 +103,7 @@ export function Sidebar({onBack }: SidebarProps) {
     {/* Render the ghost node during drag */}
     {isDragging && <DragGhost type={type} />}
 
-    <aside className="flex flex-col bg-[linear-gradient(to_bottom,#E0F2FE,transparent)] border-white border-3 h-full rounded-2xl shadow-2xl   overflow-hidden">
+    <aside className="flex flex-col bg-[linear-gradient(to_bottom,#E2E8F0,transparent)] border-white border-3 h-full rounded-2xl shadow-2xl   overflow-hidden">
       
       {/* Blue Header Section */}
       <div className="relative p-4 h-[6vw] min-h-[60px] flex items-center justify-between">
@@ -115,7 +112,7 @@ export function Sidebar({onBack }: SidebarProps) {
           <span className="text-black  text-sm tracking-wide"></span>
         </div>
         
-        {/* Back Button - Redesigned to be subtle */}
+     
        
       </div>
 
