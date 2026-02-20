@@ -57,7 +57,7 @@ function Dashboard({ user, onOpenEditor }: DashboardProps) {
   };
 
   return (
-    <div className="flex h-screen w-full bg-[#efefef]">
+    <div className="flex h-screen w-screen bg-[#efefef]">
       {/* Sidebar */}
       <div className="w-1/5 bg-[linear-gradient(to_bottom,#E0F2FE,transparent)] border-r-2  border-white  flex flex-col gap-2">
         <div className="p-4  text-gray-800 font-extralight truncate">
