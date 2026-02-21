@@ -1,5 +1,6 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect , useRef } from "react";
 import { ClimbingBoxLoader } from "react-spinners";
+import { motion } from "framer-motion";
 import {
   ReactFlow,
   applyNodeChanges,
@@ -142,23 +143,33 @@ function FlowContent({
   );
 
   return (
-    <div className="w-screen h-screen bg-[#ffffff]">
+    <div className="w-full min-h-dvh bg-[#ffffff]">
       <Sidebar onBack={onBack} />
       
       {/* Floating Action Buttons */}
       <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex gap-4">
-        <button
+        <motion.button
+        whileHover={{ 
+        scale: 1.1,
+        backgroundColor: "#61dafb",
+        color: "#000" 
+      }}
           className="px-6 py-3 bg-white border border-gray-300 rounded-full shadow-lg hover:bg-gray-50 cursor-pointer text-sm font-medium"
           onClick={RetriveData}
         >
           Retrieve Data
-        </button>
-        <button
+        </motion.button>
+        <motion.button
+         whileHover={{ 
+        scale: 1.05,
+        backgroundColor: "#61dafb",
+        color: "#000" 
+      }}
           className="px-6 py-3 bg-[#353535] text-white rounded-full shadow-lg hover:bg-black cursor-pointer text-sm font-medium"
           onClick={SaveData}
         >
           Save to Cloud
-        </button>
+        </motion.button>
       </div>
 
       <ReactFlow
@@ -184,6 +195,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [currentProjectId, setCurrentProjectId] = useState<string | null>(null);
+  
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
