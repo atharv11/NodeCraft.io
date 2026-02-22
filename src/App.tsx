@@ -143,7 +143,7 @@ function FlowContent({
   );
 
   return (
-    <div className="w-full min-h-dvh bg-[#ffffff]">
+    <div className="w-full h-screen bg-[#ffffff]">
       <Sidebar onBack={onBack} />
       
       {/* Floating Action Buttons */}

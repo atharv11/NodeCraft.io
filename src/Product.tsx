@@ -111,14 +111,14 @@ const attributeConfigs = [
         </div>
       </div>
    {AttriHover && (
-            <div className="absolute top-10 left-0 z-50 p-4 w-60 bg-white shadow-2xl rounded-2xl border border-gray-100 flex flex-col gap-4 text-gray-800">
+            <div className="absolute top-10 left-0 z-50 p-4 w-60 border-2 border-white bg-[linear-gradient(to_bottom,#E0F2FE,transparent)] shadow-2xl rounded-2xl  flex flex-col gap-4 text-gray-800">
               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Attributes</p>
               
               {/* 3. LOOP through your configs instead of copy-pasting */}
               {attributeConfigs.map((config) => (
                 <div key={config.key} className="flex flex-col gap-1">
                   <label className="text-[9px] text-gray-500 font-medium">{config.label}</label>
-                  <div className="flex items-center gap-2 bg-gray-50 p-2 rounded-lg border border-gray-100">
+                  <div className="flex items-center gap-2 bg-gray-50 p-2 rounded-lg border border-gray-400">
                     <input
                       type="number"
                       className="nodrag w-full bg-transparent text-sm outline-none"
@@ -126,7 +126,7 @@ const attributeConfigs = [
                       onChange={(e) => updateField(config.key, parseFloat(e.target.value))}
                     />
                     <select 
-                      className="nodrag bg-transparent text-[10px] font-bold text-blue-500 outline-none cursor-pointer border-l pl-2 border-gray-300"
+                      className="nodrag bg-transparent text-[10px] font-bold text-blue-500 outline-none cursor-pointer border-l pl-2 border-gray-400"
                       value={data.units?.[config.key] || config.options[0]}
                       onChange={(e) => updateUnit(config.key, e.target.value)}
                     >
