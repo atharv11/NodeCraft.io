@@ -234,7 +234,7 @@ function FlowContent({
           onClick={RetriveData}
         >
           Retrieve Data
-        </button>
+        </motion.button>
 
         <button
           className="px-6 py-3 bg-white border border-gray-300 rounded-full shadow-lg hover:bg-gray-50 cursor-pointer text-sm font-medium"
@@ -243,7 +243,7 @@ function FlowContent({
           Save Selection as Article
         </button>
 
-        <button
+        <motion.button
           className="px-6 py-3 bg-[#353535] text-white rounded-full shadow-lg hover:bg-black cursor-pointer text-sm font-medium"
           onClick={SaveData}
         >
