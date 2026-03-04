@@ -1,6 +1,5 @@
 import React, { type FC } from "react";
 import { Handle, type HandleProps } from "@xyflow/react";
-
 const CustomHandle: FC<HandleProps> = ({ style, ...props }) => {
   return (
     <Handle
