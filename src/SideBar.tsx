@@ -1,10 +1,7 @@
 import { useReactFlow, type XYPosition } from "@xyflow/react";
 import { useCallback, useState } from "react";
-// NOTE: Assuming this file exists and contains OnDropAction, useDnD, useDnDPosition
 import { type OnDropAction, useDnD, useDnDPosition } from "./useDnD.js";
 import Button from "@mui/material/Button";
-import { signOut } from "firebase/auth";
-import { auth } from "./FireBase.js";
 import { FaArrowLeft } from "react-icons/fa";
 import Dashboard from "./Dashboard.js";
 import { nanoid } from 'nanoid';
@@ -13,7 +10,6 @@ import { nanoid } from 'nanoid';
 let id = 0;
 
 
-// --- DragGhost Component (Fixed Positioning and Transparency) ---
 
 interface DragGhostProps {
   type: string | null;
@@ -32,7 +28,7 @@ export function DragGhost({ type }: DragGhostProps) {
       className={` fixed 
         pointer-events-none 
         z-9999 // Ensures it sits on top of everything
-        w-32 h-12 flex items-center justify-center rounded-lg shadow-xl font-bold p-2
+        w-32 h-12 flex items-center justify-center rounded-lg shadow-xl  p-2
         text-white transition duration-75 
         
       `}
@@ -55,10 +51,11 @@ export function DragGhost({ type }: DragGhostProps) {
 
 // --- Sidebar Component ---
 interface SidebarProps {
-  onBack: () => void; // <--- NEW PROP
+  onBack: () => void;
+ 
 }
 
-export function Sidebar({onBack}: SidebarProps) {
+export function Sidebar({onBack }: SidebarProps) {
   const { onDragStart, isDragging } = useDnD();
   // The type of the node that is being dragged.
   const [type, setType] = useState<string | null>(null);
@@ -106,28 +103,28 @@ export function Sidebar({onBack}: SidebarProps) {
     {/* Render the ghost node during drag */}
     {isDragging && <DragGhost type={type} />}
 
-    <aside className="flex flex-col bg-[#1A1A1A] h-full rounded-2xl shadow-2xl  border-[#333333] overflow-hidden">
+    <aside className="flex flex-col bg-[linear-gradient(to_bottom,#E2E8F0,transparent)] border-white border-3 h-full rounded-2xl shadow-2xl   overflow-hidden">
       
       {/* Blue Header Section */}
-      <div className="relative bg-[#0E6EF7] p-4 h-[6vw] min-h-[60px] flex items-center justify-between">
+      <div className="relative p-4 h-[6vw] min-h-[60px] flex items-center justify-between">
         <div className="flex items-center gap-2">
           {/* Your custom spinning/rotated icon */}
-          <span className="text-white font-bold text-sm tracking-wide">ProjectFile Name</span>
+          <span className="text-black  text-sm tracking-wide"></span>
         </div>
         
-        {/* Back Button - Redesigned to be subtle */}
+     
        
       </div>
 
       {/* Content Section */}
       <div className="p-4 flex-1 flex flex-col gap-3">
-        <p className="text-[#888888] text-[10px] uppercase font-bold tracking-widest mb-1">
+        <p className="text-[#7e7e7e] text-[10px] uppercase  tracking-widest mb-1">
           Components
         </p>
 
         {/* Draggable Node 1: Product */}
         <div
-          className="group flex items-center justify-between bg-[#262626] p-3 rounded-xl text-gray-200 cursor-grab border border-transparent hover:border-[#0E6EF7] hover:bg-[#2d2d2d] transition-all duration-200 shadow-sm"
+          className="group flex items-center justify-between  p-3 rounded-xl text-gray-200 cursor-grab  hover:bg-[#d3d3d3] transition-all duration-200 "
           onPointerDown={(event) => {
             setType("Product");
             onDragStart(
@@ -136,13 +133,13 @@ export function Sidebar({onBack}: SidebarProps) {
             );
           }}
         >
-          <span className="text-sm font-medium">Product</span>
+          <span className="text-sm font-medium text-black">Product</span>
           <div className="w-1.5 h-1.5 rounded-full bg-[#0E6EF7] opacity-0 group-hover:opacity-100 transition-opacity"></div>
         </div>
 
         {/* Draggable Node 2: Process */}
         <div
-          className="group flex items-center justify-between bg-[#262626] p-3 rounded-xl text-gray-200 cursor-grab border border-transparent hover:border-[#0E6EF7] hover:bg-[#2d2d2d] transition-all duration-200 shadow-sm"
+          className="group flex items-center justify-between  p-3 rounded-xl text-black cursor-grab    hover:bg-[#d3d3d3] transition-all duration-200 "
           onPointerDown={(event) => {
             setType("process");
             onDragStart(
@@ -157,7 +154,7 @@ export function Sidebar({onBack}: SidebarProps) {
 
         {/* Draggable Node 3: Resources */}
         <div
-          className="group flex items-center justify-between bg-[#262626] p-3 rounded-xl text-gray-200 cursor-grab border border-transparent hover:border-[#0E6EF7] hover:bg-[#2d2d2d] transition-all duration-200 shadow-sm"
+          className="group flex items-center justify-between  p-3 rounded-xl text-black cursor-grab   hover:bg-[#d3d3d3] transition-all duration-200 "
           onPointerDown={(event) => {
             setType("resources");
             onDragStart(
@@ -172,14 +169,20 @@ export function Sidebar({onBack}: SidebarProps) {
       </div>
        <button 
           onClick={onBack}
-          className="bg-white/7 hover:bg-white/20 text-white p-1.5 rounded-lg transition-colors cursor-pointer"
+          className="flex justify-start items-start gap-1 text-sm bg-white/7 hover:bg-white/20 text-gray-500 p-2 rounded-lg transition-colors cursor-pointer"
           title="Go Back"
         >
-          <FaArrowLeft size={14} />
+          
+            <div>
+            <FaArrowLeft className="" size={10} /> 
+            </div>
+            <div className="text-sm">Go Back</div>
+          
+          
         </button>
 
       {/* Subtle Footer info */}
-      <div className="p-4 bg-[#141414] border-t border-[#262626]">
+      <div className="p-4 border-t ">
         <div className="text-[9px] text-gray-500 text-center uppercase tracking-tighter">
           Drag nodes onto the canvas
         </div>
