@@ -57,6 +57,7 @@ function FlowContent({
 }) {
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
   const [edges, setEdges] = useState<Edge[]>([]);
+  const [attributes , setAttributes] = useState(null);
 
   
   const getProjectDocRef = () => {
