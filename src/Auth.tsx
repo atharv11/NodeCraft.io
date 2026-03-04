@@ -32,23 +32,36 @@ export default function Auth() {
     }
   };
 
-  useEffect(() => {
+useEffect(() => {
   if (videoRef.current) {
-    videoRef.current.defaultMuted = true;
+    // 1. Force the muted property at the DOM level
     videoRef.current.muted = true;
+    // 2. Some browsers specifically look for this property
+    videoRef.current.defaultMuted = true;
+    
+    // 3. Manually trigger play to bypass the "autoplay-block"
+    const playPromise = videoRef.current.play();
+    
+    if (playPromise !== undefined) {
+      playPromise.catch((error) => {
+        // This usually triggers if the phone is in Low Power Mode
+        console.log("Autoplay prevented by mobile settings:", error);
+      });
+    }
   }
 }, []);
 
   return (
-    /* 1. Added 'min-h-[100dvh]' for mobile browser address bar consistency */
-    <div className="flex items-center justify-center min-h-dvh bg-[#191919] p-4 sm:p-6">
+   
+    <div className="flex items-center justify-center min-h-dvh bg-[#efefef] font-extralight p-4 sm:p-6">
       
       {/* 2. Used 'w-full' and restricted 'max-w-md' for consistent width on all screens */}
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden">
+      <div className="w-full max-w-md border-2 border-white bg-[linear-gradient(to_bottom,#E0F2FE,transparent)] rounded-2xl shadow-xl overflow-hidden">
         
         {/* Header Section */}
         <div className="relative w-full h-32 sm:h-40 flex items-center justify-center bg-gray-800">
           <video 
+            ref={videoRef}
             className="absolute top-0 left-0 w-full h-full object-cover z-0" 
             src="/Pink_gradient.mp4" 
             autoPlay 
@@ -62,7 +75,7 @@ export default function Auth() {
         </div>
             
         <div className="p-6 sm:p-8">
-          <h2 className="text-xl sm:text-2xl font-bold text-center text-gray-800 mb-1">
+          <h2 className="text-xl sm:text-2xl  text-center text-gray-800 mb-1">
             {isLogin ? 'Welcome Back!' : 'Create Account'}
           </h2>
           <p className="text-center text-gray-500 mb-6 text-xs sm:text-sm">
@@ -117,8 +130,8 @@ export default function Auth() {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full py-3.5 sm:py-3 rounded-lg text-white font-semibold shadow-md transition duration-200 active:scale-[0.98] mt-2
-                ${loading ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
+              className={`w-full py-3.5 sm:py-3 rounded-lg text-black font-semibold  transition duration-200 active:scale-[0.98] mt-2
+                ${loading ? ' cursor-not-allowed' : ' hover:bg-blue-100'}`}
             >
               {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
             </button>
@@ -128,7 +141,7 @@ export default function Auth() {
             {isLogin ? "Don't have an account? " : "Already have an account? "}
             <button
               onClick={() => setIsLogin(!isLogin)}
-              className="text-blue-600 font-bold hover:underline focus:outline-none p-2" /* Added p-2 for larger tap target */
+              className="text-blue-600  hover:underline focus:outline-none p-2" 
             >
               {isLogin ? 'Sign Up' : 'Log In'}
             </button>
