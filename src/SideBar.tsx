@@ -6,7 +6,7 @@ import { FaArrowLeft } from "react-icons/fa";
 import Dashboard from "./Dashboard.js";
 import { nanoid } from "nanoid";
 import type { User } from "firebase/auth";
-import { ArticlesSection } from "./Article"; // New
+import { ArticlesSection } from"./Article.js"; // New
 
 // This is a simple ID generator for the nodes.
 let id = 0;
@@ -104,9 +104,9 @@ export function Sidebar({ onBack, user }: SidebarProps) {
       {/* Render the ghost node during drag */}
       {isDragging && <DragGhost type={type} />}
 
-      <aside className="flex flex-col bg-[#1A1A1A] h-full rounded-2xl shadow-2xl  border-[#333333] overflow-hidden">
+      <aside className=" bg-[linear-gradient(to_bottom,#E0F2FE,transparent)] border-r-2  border-white  flex flex-col gap-2 h-full rounded-2xl shadow-2xl  overflow-hidden">
         {/* Blue Header Section */}
-        <div className="relative bg-[#0E6EF7] p-4 h-[6vw] min-h-[60px] flex items-center justify-between">
+        <div className="relative  p-4 h-[6vw] min-h-[60px] flex items-center justify-between">
           <div className="flex items-center gap-2">
             {/* Your custom spinning/rotated icon */}
             <span className="text-white font-bold text-sm tracking-wide">
@@ -123,7 +123,7 @@ export function Sidebar({ onBack, user }: SidebarProps) {
 
           {/* Draggable Node 1: Product */}
           <div
-            className="group flex items-center justify-between bg-[#262626] p-3 rounded-xl text-gray-200 cursor-grab border border-transparent hover:border-[#0E6EF7] hover:bg-[#2d2d2d] transition-all duration-200 shadow-sm"
+            className="group flex items-center justify-between bg-blue-300 p-3 rounded-xl text-gray-800 cursor-grab border border-transparent  hover:bg-blue-400 transition-all duration-200 shadow-sm"
             onPointerDown={(event) => {
               setType("Product");
               onDragStart(
@@ -138,7 +138,7 @@ export function Sidebar({ onBack, user }: SidebarProps) {
 
           {/* Draggable Node 2: Process */}
           <div
-            className="group flex items-center justify-between bg-[#262626] p-3 rounded-xl text-gray-200 cursor-grab border border-transparent hover:border-[#0E6EF7] hover:bg-[#2d2d2d] transition-all duration-200 shadow-sm"
+            className="group flex items-center justify-between bg-blue-200 p-3 rounded-xl text-gray-800 cursor-grab border border-transparent  hover:bg-blue-300 transition-all duration-200 shadow-sm"
             onPointerDown={(event) => {
               setType("process");
               onDragStart(
@@ -153,7 +153,7 @@ export function Sidebar({ onBack, user }: SidebarProps) {
 
           {/* Draggable Node 3: Resources */}
           <div
-            className="group flex items-center justify-between bg-[#262626] p-3 rounded-xl text-gray-200 cursor-grab border border-transparent hover:border-[#0E6EF7] hover:bg-[#2d2d2d] transition-all duration-200 shadow-sm"
+            className="group flex items-center justify-between bg-blue-100 p-3 rounded-xl text-gray-800 cursor-grab border border-transparent  hover:bg-blue-200 transition-all duration-200 shadow-sm"
             onPointerDown={(event) => {
               setType("resources");
               onDragStart(
@@ -178,20 +178,21 @@ export function Sidebar({ onBack, user }: SidebarProps) {
 
         <button
           onClick={onBack}
-          className="bg-white/7 hover:bg-white/20 text-white p-1.5 rounded-lg transition-colors cursor-pointer mx-4 mb-2 self-start"
+          
           title="Go Back"
         >
           
-            <div>
+            <div className="bg-transparent w-20 text-5xl flex gap-3 justify-center items-center border-2 hover:bg-gray-500 text-gray-900 p-1.5 rounded-lg transition-colors cursor-pointer   self-start">
             <FaArrowLeft className="" size={10} /> 
+             <div className="text-sm">Go Back</div>
             </div>
-            <div className="text-sm">Go Back</div>
+           
           
           
         </button>
 
         {/* Subtle Footer info */}
-        <div className="p-4 bg-[#141414] border-t border-[#262626]">
+        <div className="p-4  border-t border-[#262626]">
           <div className="text-[9px] text-gray-500 text-center uppercase tracking-tighter">
             Drag nodes or articles onto the canvas
           </div>
