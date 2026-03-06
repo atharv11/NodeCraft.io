@@ -182,7 +182,7 @@ export function Sidebar({ onBack, user }: SidebarProps) {
           title="Go Back"
         >
           
-          <div className="flex items-center justify-center gap-2 self-start rounded-lg border-2 border-gray-900 bg-transparent p-1.5 text-gray-900 transition-colors hover:bg-gray-500 hover:text-white cursor-pointer w-fit px-4">
+          <div className="flex items-center justify-center gap-2 self-start rounded-lg   bg-transparent p-1.5 text-gray-900 transition-colors hover:bg-gray-500 hover:text-white cursor-pointer w-fit px-4">
   <FaArrowLeft size={14} /> 
   <span className="text-sm font-medium">Go Back</span>
 </div>
