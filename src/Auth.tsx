@@ -2,6 +2,7 @@ import React, { useState , useRef , useEffect} from 'react';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { auth } from './FireBase.js'; 
 
+
 export default function Auth() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isLogin, setIsLogin] = useState(true);
@@ -51,34 +52,43 @@ useEffect(() => {
   }
 }, []);
 
+    
+
   return (
-   
-    <div className="flex items-center justify-center min-h-dvh bg-[#efefef] font-extralight p-4 sm:p-6">
+    <div className='text-white'>
+      <video id='speeed' src="Nodecraft_login screen.mp4" ref={videoRef}
+            className="fixed top-0 left-0 min-w-full min-h-full w-full h-full object-cover -z-10" 
+           
+            autoPlay 
+            loop 
+            muted
+            playsInline ></video>
+    <div className="flex items-center justify-center min-h-dvh  font-extralight p-4 sm:p-6">
       
       {/* 2. Used 'w-full' and restricted 'max-w-md' for consistent width on all screens */}
-      <div className="w-full max-w-md border-2 border-white bg-[linear-gradient(to_bottom,#E0F2FE,transparent)] rounded-2xl shadow-xl overflow-hidden">
+      <div className="w-full max-w-md border-2 border-white bg-[linear-gradient(to_bottom,#000000,transparent)] rounded-2xl shadow-xl overflow-hidden">
         
         {/* Header Section */}
-        <div className="relative w-full h-32 sm:h-40 flex items-center justify-center bg-gray-800">
+        <div className="relative w-full h-32 sm:h-40 flex items-center justify-center ">
           <video 
             ref={videoRef}
-            className="absolute top-0 left-0 w-full h-full object-cover z-0" 
+            className="absolute opacity-70 top-0 left-0 w-full h-full object-cover z-0" 
             src="/Pink_gradient.mp4" 
             autoPlay 
             loop 
             muted
             playsInline 
           />
-          <h1 className="relative z-10 text-3xl sm:text-4xl font-light text-white mix-blend-difference tracking-wide">
+          <h1 className="relative z-10 text-3xl sm:text-4xl font-light text-white mix-blend-color-dodge tracking-wide">
             NodeCraft.io
           </h1>
         </div>
             
         <div className="p-6 sm:p-8">
-          <h2 className="text-xl sm:text-2xl  text-center text-gray-800 mb-1">
+          <h2 className="text-xl sm:text-2xl  text-center text-white-800 mb-1">
             {isLogin ? 'Welcome Back!' : 'Create Account'}
           </h2>
-          <p className="text-center text-gray-500 mb-6 text-xs sm:text-sm">
+          <p className="text-center text-white-500 mb-6 text-xs sm:text-sm">
             {isLogin ? 'Enter your details to sign in.' : 'Start your journey with us.'}
           </p>
 
@@ -91,7 +101,7 @@ useEffect(() => {
           <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
             {!isLogin && (
               <div>
-                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Name</label>
+                <label className="block text-xs sm:text-sm font-medium text-white-700 mb-1">Name</label>
                 <input
                   type="text"
                   required
@@ -104,7 +114,7 @@ useEffect(() => {
             )}
 
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Email</label>
+              <label className="block text-xs sm:text-sm font-medium text-white-700 mb-1">Email</label>
               <input
                 type="email"
                 required
@@ -116,7 +126,7 @@ useEffect(() => {
             </div>
 
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Password</label>
+              <label className="block text-xs sm:text-sm font-medium text-white-700 mb-1">Password</label>
               <input
                 type="password"
                 required
@@ -130,24 +140,25 @@ useEffect(() => {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full py-3.5 sm:py-3 rounded-lg text-black font-semibold  transition duration-200 active:scale-[0.98] mt-2
+              className={`w-full py-3.5 sm:py-3 rounded-lg text-white font-semibold  transition duration-200 active:scale-[0.98] mt-2
                 ${loading ? ' cursor-not-allowed' : ' hover:bg-blue-100'}`}
             >
               {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
             </button>
           </form>
 
-          <div className="mt-8 text-center text-sm text-gray-600">
+          <div className="mt-8 text-center text-sm text-white-600">
             {isLogin ? "Don't have an account? " : "Already have an account? "}
             <button
               onClick={() => setIsLogin(!isLogin)}
-              className="text-blue-600  hover:underline focus:outline-none p-2" 
+              className="text-white  hover:underline focus:outline-none p-2" 
             >
               {isLogin ? 'Sign Up' : 'Log In'}
             </button>
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 }
