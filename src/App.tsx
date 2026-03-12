@@ -55,16 +55,20 @@ const initialNodes: Node[] = [];
 // --- INTERNAL FLOWCONTENT COMPONENT ---
 function FlowContent({
   user,
-  projectId, // Added projectId prop
+  projectId,
+  projectName,
   onBack,
 }: {
   user: User;
   projectId: string | null;
+  projectName: string;
   onBack: () => void;
 }) {
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
   const [edges, setEdges] = useState<Edge[]>([]);
   const [selectedNodeIds, setSelectedNodeIds] = useState<string[]>([]);
+
+ 
 
   // HELPER: This creates the correct path based on whether a project is open
   const getProjectDocRef = () => {
@@ -76,7 +80,8 @@ function FlowContent({
       return doc(db, "users", user.uid);
     }
   };
-
+   
+  
   const RetriveData = useCallback(async () => {
     if (!user) return;
 
@@ -220,7 +225,7 @@ function FlowContent({
 
   return (
     <div className="w-screen h-screen bg-[#ffffff]">
-      <Sidebar onBack={onBack} user={user} />
+      <Sidebar onBack={onBack} user={user} projectName={projectName || "Untitled Project"} />
 
       {/* Floating Action Buttons */}
       <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex gap-4">
@@ -291,6 +296,7 @@ export default function App() {
   const [currentProjectId, setCurrentProjectId] = useState<string | null>(
     null
   );
+  const [currentProjectName, setCurrentProjectName] = useState<string>("");
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -337,6 +343,7 @@ export default function App() {
           <FlowContent
             user={user}
             projectId={currentProjectId}
+            projectName={currentProjectName}
             onBack={() => {
               setIsEditorOpen(false);
               setCurrentProjectId(null); // Clear ID when closing
@@ -350,8 +357,9 @@ export default function App() {
   return (
     <Dashboard
       user={user}
-      onOpenEditor={(id?: string) => {
+      onOpenEditor={(id?: string , name?: string) => {
         setCurrentProjectId(id || null);
+        setCurrentProjectName(name || "Main Workspace");
         setIsEditorOpen(true);
       }}
     />

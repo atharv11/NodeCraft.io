@@ -53,10 +53,11 @@ export function DragGhost({ type }: DragGhostProps) {
 // --- Sidebar Component ---
 interface SidebarProps {
   onBack: () => void;
-  user: User; // ⬅️ NEW PROP
+  user: User;
+  projectName: string; // <--- ADD THIS
 }
 
-export function Sidebar({ onBack, user }: SidebarProps) {
+export function Sidebar({ onBack, user , projectName }: SidebarProps) {
   const { onDragStart, isDragging } = useDnD();
   // The type of the node that is being dragged.
   const [type, setType] = useState<string | null>(null);
@@ -109,8 +110,8 @@ export function Sidebar({ onBack, user }: SidebarProps) {
         <div className="relative  p-4 h-[6vw] min-h-[60px] flex items-center justify-between">
           <div className="flex items-center gap-2">
             {/* Your custom spinning/rotated icon */}
-            <span className="text-white font-bold text-sm tracking-wide">
-              ProjectFile Name
+            <span className="text-blue-950 font-bold   text-xl tracking-wide">
+              {projectName || "Untitled Project"}
             </span>
           </div>
         </div>

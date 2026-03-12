@@ -8,7 +8,7 @@ import { CustomPrompt } from "./CustomPrompt.js"; // Ensure this matches your fi
 
 interface DashboardProps {
   user: any;
-  onOpenEditor: (projectId: string) => void;
+  onOpenEditor: (projectId: string , name?: string) => void;
 }
 
 function Dashboard({ user, onOpenEditor }: DashboardProps) {
@@ -91,7 +91,7 @@ function Dashboard({ user, onOpenEditor }: DashboardProps) {
 
               <button
                 className="flex flex-col justify-between  border-2 border-white cursor-pointer bg-[linear-gradient(to_bottom,#F3F4F6,transparent)] p-6 w-64 h-44 rounded-2xl shadow-sm hover:shadow-lg hover:border-white transition-all text-left"
-                onClick={() => onOpenEditor(project.id)}
+                onClick={() => onOpenEditor(project.id , project.name)}
               >
                 <h3 className="text-lg font-semibold text-gray-800 truncate pr-6">{project.name || "Untitled Project"}</h3>
                 <div className="w-full text-[10px] font-medium p-2 bg-gray-50 rounded-lg text-gray-600 border border-gray-100">
@@ -107,7 +107,7 @@ function Dashboard({ user, onOpenEditor }: DashboardProps) {
               if (!user) return;
               const finalName = projectName.trim() || "Untitled Project";
               const newId = await createNewProject(user.uid, user.email,  finalName);
-              onOpenEditor(newId ); // Redirects to editor
+              onOpenEditor(newId , finalName ); // Redirects to editor
             }} 
           />
         </div>

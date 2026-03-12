@@ -150,8 +150,8 @@ const Process = ({ data, id }: NodeProps<ProcessNode>) => {
         </div>
       )}
 
-      <CustomHandle type="source" position={Position.Right} id="source-right" />
-      <CustomHandle type="target" position={Position.Left} />
+      <CustomHandle type="source" position={Position.Top} id="source-right" />
+      <CustomHandle type="target" position={Position.Bottom} />
     </div>
   );
 };
