@@ -11,7 +11,6 @@ import { ArticlesSection } from"./Article.js"; // New
 // This is a simple ID generator for the nodes.
 let id = 0;
 
-// --- DragGhost Component (Fixed Positioning and Transparency) ---
 
 interface DragGhostProps {
   type: string | null;
@@ -101,7 +100,7 @@ export function Sidebar({ onBack, user , projectName }: SidebarProps) {
   );
 
   return (
-    <div className="fixed bottom-4 left-4 z-40 w-[16vw] h-[38vw] min-w-[180px]">
+    <div className="fixed p-4 z-40 w-64 sm:w-72 h-screen">
       {/* Render the ghost node during drag */}
       {isDragging && <DragGhost type={type} />}
 
