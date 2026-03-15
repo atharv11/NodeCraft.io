@@ -137,8 +137,8 @@ const attributeConfigs = [
               ))}
             </div>
           )}
-        <CustomHandle type="source" position={Position.Right} id="source-right" />
-      <CustomHandle type="target" position={Position.Left} />
+        <CustomHandle type="source" position={Position.Left} id="source-right" />
+      <CustomHandle type="target" position={Position.Right} />
     </div>
   );
 };

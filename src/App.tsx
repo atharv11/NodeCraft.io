@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect , useRef } from "react";
 import { ClimbingBoxLoader } from "react-spinners";
 import { motion } from "framer-motion";
+
 import {
   ReactFlow,
   applyNodeChanges,
@@ -11,10 +12,12 @@ import {
   type OnNodesChange,
   type OnEdgesChange,
   type OnConnect,
+  useNodesState,
   Background,
   BackgroundVariant,
   Controls,
   ReactFlowProvider,
+  type Connection,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
@@ -46,6 +49,9 @@ const nodeTypes = {
   resources: Resources,
 };
 
+// ... inside your component
+
+
 const edgeTypes = {
   buttonEdge: ButtonEdge,
 };
@@ -64,12 +70,50 @@ function FlowContent({
   projectName: string;
   onBack: () => void;
 }) {
-  const [nodes, setNodes] = useState<Node[]>(initialNodes);
+  
   const [edges, setEdges] = useState<Edge[]>([]);
   const [selectedNodeIds, setSelectedNodeIds] = useState<string[]>([]);
-
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
  
+  
+ const isValidConnection = useCallback((edge: Edge | Connection) => {
+  const sourceNode = nodes.find((n) => n.id === edge.source);
+  const targetNode = nodes.find((n) => n.id === edge.target);
 
+  if (!sourceNode || !targetNode) return false;
+
+  // Ensure these match the 'type' property you gave your nodes
+  const sourceType = sourceNode.type as string; 
+  const targetType = targetNode.type as string;
+
+  // Defining the rules exactly as they appear in the JSON
+  const rules: Record<string, Record<string, string | null>> = {
+    product: {
+      product: "consists of",
+      process: "input for",
+      resources: null,
+    },
+    process: {
+      product: "outputs",
+      process: "followed by",
+      resources: "executed by",
+    },
+    resources: {
+      product: null,
+      process: null,
+      resources: "consists of",
+    },
+  };
+
+  // Check if the connection is allowed (not null)
+  const isAllowed = rules[sourceType]?.[targetType] !== null;
+
+  if (!isAllowed) {
+    console.warn(`Connection from ${sourceType} to ${targetType} is not allowed!`);
+  }
+
+  return isAllowed;
+}, [nodes]);
   // HELPER: This creates the correct path based on whether a project is open
   const getProjectDocRef = () => {
     if (projectId) {
@@ -197,10 +241,6 @@ function FlowContent({
     }
   }, [user, nodes, edges, selectedNodeIds]);
 
-  const onNodesChange: OnNodesChange = useCallback(
-    (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
-    []
-  );
 
   const onEdgesChange: OnEdgesChange = useCallback(
     (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
@@ -228,33 +268,41 @@ function FlowContent({
       <Sidebar onBack={onBack} user={user} projectName={projectName || "Untitled Project"} />
 
       {/* Floating Action Buttons */}
-      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex gap-4">
-        <motion.button
-        whileHover={{ 
-        scale: 1.1,
-        backgroundColor: "#61dafb",
-        color: "#000" 
-      }}
-          className="px-6 py-3 bg-white border border-gray-300 rounded-full shadow-lg hover:bg-gray-50 cursor-pointer text-sm font-medium"
-          onClick={RetriveData}
-        >
-          Retrieve Data
-        </motion.button>
+      <div className="fixed bottom-0 left-0 w-full p-4 z-50 pointer-events-none flex justify-center">
+  
+  {/* The Button Group: 
+    - pointer-events-auto turns clicking back ON for the buttons themselves
+    - flex-col for mobile (stacked)
+    - sm:flex-row for desktop (side-by-side)
+  */}
+  <div className="pointer-events-auto flex flex-col sm:flex-row gap-2 w-full max-w-[280px] sm:max-w-none sm:w-auto bg-white/50 sm:bg-transparent backdrop-blur-sm sm:backdrop-blur-none p-2 rounded-2xl sm:p-0">
+    
+    <motion.button
+      whileTap={{ scale: 0.95 }}
+      className="px-4 py-2 bg-white border border-gray-300 rounded-xl shadow-lg text-[11px] sm:text-sm font-bold uppercase tracking-tight"
+      onClick={RetriveData}
+    >
+      Retrieve Data
+    </motion.button>
 
-        <button
-          className="px-6 py-3 bg-white border border-gray-300 rounded-full shadow-lg hover:bg-gray-50 cursor-pointer text-sm font-medium"
-          onClick={saveSelectionAsArticle}
-        >
-          Save Selection as Article
-        </button>
+    <motion.button
+      whileTap={{ scale: 0.95 }}
+      className="px-4 py-2 bg-white border border-gray-300 rounded-xl shadow-lg text-[11px] sm:text-sm font-bold uppercase tracking-tight"
+      onClick={saveSelectionAsArticle}
+    >
+      Save Selection
+    </motion.button>
 
-        <motion.button
-          className="px-6 py-3 bg-[#353535] text-white rounded-full shadow-lg hover:bg-black cursor-pointer text-sm font-medium"
-          onClick={SaveData}
-        >
-          Save to Cloud
-        </motion.button>
-      </div>
+    <motion.button
+      whileTap={{ scale: 0.95 }}
+      className="px-4 py-2 bg-[#353535] text-white rounded-xl shadow-lg text-[11px] sm:text-sm font-bold uppercase tracking-tight"
+      onClick={SaveData}
+    >
+      Save to Cloud
+    </motion.button>
+    
+  </div>
+</div>
 
       <ReactFlow
         nodes={nodes}
@@ -264,7 +312,9 @@ function FlowContent({
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
-        // ↓ This callback is already in your code
+        isValidConnection={isValidConnection}
+        
+      
         onSelectionChange={(params) => {
           const selected = (params.nodes ?? []).map((n) => n.id);
           setSelectedNodeIds(selected);
