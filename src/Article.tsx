@@ -172,7 +172,7 @@ export function ArticlesSection({ user }: ArticlesSectionProps) {
       {articles.map((article) => (
         <div
           key={article.id}
-          className="group flex items-center justify-between cursor-pointer p-2 rounded-lg text-gray-800 border bg-gray-200  hover:bg-gray-500 transition-all duration-200 shadow-sm"
+          className="group flex items-center justify-between cursor-pointer p-2 rounded-lg text-gray-800 border bg-gray-200  hover:bg-gray-300 transition-all duration-200 shadow-sm"
           onPointerDown={(event) => {
             // Only start drag when clicking the main card, not the delete button
             onDragStart(
@@ -194,7 +194,7 @@ export function ArticlesSection({ user }: ArticlesSectionProps) {
 
           {/* Delete button */}
           <button
-            className="ml-2 p-1 rounded-md hover:bg-red-600/80 text-red-400 hover:text-white transition-colors cursor-pointer"
+            className="ml-2 p-1 rounded-md hover:bg-red-400 text-red-400 hover:text-white transition-colors cursor-pointer"
             title="Delete article"
             onClick={(e) => {
               e.stopPropagation(); // prevent starting a drag
