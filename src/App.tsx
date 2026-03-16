@@ -74,6 +74,17 @@ function FlowContent({
   const [edges, setEdges] = useState<Edge[]>([]);
   const [selectedNodeIds, setSelectedNodeIds] = useState<string[]>([]);
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+
+  const onSelectionChange = useCallback((params: { nodes: Node[] }) => {
+  const newIds = (params.nodes ?? []).map((n) => n.id);
+  
+  setSelectedNodeIds((prev) => {
+    if (prev.length !== newIds.length) return newIds;
+    const isSame = prev.every((id, index) => id === newIds[index]);
+    if (isSame) return prev;
+    return newIds;
+  });
+}, []);
  
   
  const isValidConnection = useCallback((edge: Edge | Connection) => {
@@ -268,34 +279,56 @@ function FlowContent({
       <Sidebar onBack={onBack} user={user} projectName={projectName || "Untitled Project"} />
 
       {/* Floating Action Buttons */}
-      <div className="fixed bottom-0 left-0 w-full p-4 z-50 pointer-events-none flex justify-center">
+      <div className="fixed bottom-0 left-0 w-full p-4 z-50 flex justify-center">
   
   {/* The Button Group: 
     - pointer-events-auto turns clicking back ON for the buttons themselves
     - flex-col for mobile (stacked)
     - sm:flex-row for desktop (side-by-side)
   */}
-  <div className="pointer-events-auto flex flex-col sm:flex-row gap-2 w-full max-w-[280px] sm:max-w-none sm:w-auto bg-white/50 sm:bg-transparent backdrop-blur-sm sm:backdrop-blur-none p-2 rounded-2xl sm:p-0">
+  <div className=" flex flex-col sm:flex-row gap-2 w-full max-w-[280px] sm:max-w-none sm:w-auto bg-white/50 sm:bg-transparent backdrop-blur-sm sm:backdrop-blur-none p-2 rounded-2xl sm:p-0">
     
     <motion.button
-      whileTap={{ scale: 0.95 }}
-      className="px-4 py-2 bg-white border border-gray-300 rounded-xl shadow-lg text-[11px] sm:text-sm font-bold uppercase tracking-tight"
+     initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ delay: 0.05 }} // Stagger them if you have multiple buttons
+  whileHover={{ 
+    scale: 1.05, 
+    boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.15)",
+    filter: "brightness(2.1)" // Makes the button slightly brighter
+  }}
+  
+      className="px-4 py-2 bg-white border cursor-pointer border-gray-300 rounded-xl shadow-lg text-[11px] sm:text-sm font-bold uppercase tracking-tight"
       onClick={RetriveData}
     >
       Retrieve Data
     </motion.button>
 
     <motion.button
-      whileTap={{ scale: 0.95 }}
-      className="px-4 py-2 bg-white border border-gray-300 rounded-xl shadow-lg text-[11px] sm:text-sm font-bold uppercase tracking-tight"
+      initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ delay: 0.05 }} // Stagger them if you have multiple buttons
+  whileHover={{ 
+    scale: 1.05, 
+    boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.15)",
+    filter: "brightness(2.1)" // Makes the button slightly brighter
+  }}
+      className="px-4 py-2 cursor-pointer bg-white border border-gray-300 rounded-xl shadow-lg text-[11px] sm:text-sm font-bold uppercase tracking-tight"
       onClick={saveSelectionAsArticle}
     >
       Save Selection
     </motion.button>
 
     <motion.button
-      whileTap={{ scale: 0.95 }}
-      className="px-4 py-2 bg-[#353535] text-white rounded-xl shadow-lg text-[11px] sm:text-sm font-bold uppercase tracking-tight"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.05 }} // Stagger them if you have multiple buttons
+      whileHover={{ 
+    scale: 1.05, 
+    boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.15)",
+    filter: "brightness(2.1)" // Makes the button slightly brighter
+  }}
+      className="px-4 py-2 bg-[#353535] cursor-pointer text-white rounded-xl shadow-lg text-[11px] sm:text-sm font-bold uppercase tracking-tight"
       onClick={SaveData}
     >
       Save to Cloud
@@ -312,13 +345,9 @@ function FlowContent({
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        onSelectionChange={onSelectionChange}
         isValidConnection={isValidConnection}
         
-      
-        onSelectionChange={(params) => {
-          const selected = (params.nodes ?? []).map((n) => n.id);
-          setSelectedNodeIds(selected);
-        }}
         // ↓ Optional: always allow box-selection without needing Shift
         selectionOnDrag={true}
         panOnDrag={false}          // so drags create selection instead of panning
