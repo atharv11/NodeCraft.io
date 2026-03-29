@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect , useRef } from "react";
 import { ClimbingBoxLoader } from "react-spinners";
 import { motion } from "framer-motion";
+import { DndContext, TouchSensor, MouseSensor, useSensor, useSensors } from '@dnd-kit/core';
 
 import {
   ReactFlow,
@@ -85,15 +86,22 @@ function FlowContent({
     return newIds;
   });
 }, []);
- 
-  
+ // This tells dnd-kit to listen for both mouse and touch!
+  const sensors = useSensors(
+    useSensor(MouseSensor),
+    useSensor(TouchSensor, {
+      // Press for 250ms before dragging starts (prevents accidental drags while scrolling)
+      activationConstraint: { delay: 250, tolerance: 5 },
+    })
+  );
+
  const isValidConnection = useCallback((edge: Edge | Connection) => {
   const sourceNode = nodes.find((n) => n.id === edge.source);
   const targetNode = nodes.find((n) => n.id === edge.target);
 
   if (!sourceNode || !targetNode) return false;
 
-  // Ensure these match the 'type' property you gave your nodes
+
   const sourceType = sourceNode.type as string; 
   const targetType = targetNode.type as string;
 
@@ -275,17 +283,13 @@ function FlowContent({
   );
 
   return (
+    <DndContext sensors={sensors}>
     <div className="w-full h-screen bg-[#ffffff]">
       <Sidebar onBack={onBack} user={user} projectName={projectName || "Untitled Project"} />
 
       {/* Floating Action Buttons */}
       <div className="fixed bottom-0 left-0 w-full p-4 z-50 flex justify-center">
-  
-  {/* The Button Group: 
-    - pointer-events-auto turns clicking back ON for the buttons themselves
-    - flex-col for mobile (stacked)
-    - sm:flex-row for desktop (side-by-side)
-  */}
+
   <div className=" flex flex-col sm:flex-row gap-2 w-full max-w-[280px] sm:max-w-none sm:w-auto bg-white/50 sm:bg-transparent backdrop-blur-sm sm:backdrop-blur-none p-2 rounded-2xl sm:p-0">
     
     <motion.button
@@ -364,6 +368,7 @@ function FlowContent({
         />
       </ReactFlow>
     </div>
+    </DndContext>
   );
 }
 

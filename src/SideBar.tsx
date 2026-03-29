@@ -6,7 +6,8 @@ import { FaArrowLeft } from "react-icons/fa";
 import Dashboard from "./Dashboard.js";
 import { nanoid } from "nanoid";
 import type { User } from "firebase/auth";
-import { ArticlesSection } from"./Article.js"; // New
+import { ArticlesSection } from"./Article.js";
+import { useDraggable } from '@dnd-kit/core';
 
 // This is a simple ID generator for the nodes.
 let id = 0;
@@ -100,7 +101,7 @@ export function Sidebar({ onBack, user , projectName }: SidebarProps) {
   );
 
   return (
-    <div className="fixed p-4 z-40 w-55  h-screen">
+    <div className="fixed p-4 z-40 w-full md:w-64 h-auto md:h-screen">
       {/* Render the ghost node during drag */}
       {isDragging && <DragGhost type={type} />}
 
@@ -123,7 +124,7 @@ export function Sidebar({ onBack, user , projectName }: SidebarProps) {
 
           {/* Draggable Node 1: Product */}
           <div
-            className="group flex items-center justify-between bg-blue-300 p-3 rounded-xl text-gray-800 cursor-grab border border-transparent  hover:bg-blue-400 transition-all duration-200 shadow-sm"
+            className="group touch-none flex items-center justify-between bg-blue-300 p-3 rounded-xl text-gray-800 cursor-grab border border-transparent  hover:bg-blue-400 transition-all duration-200 shadow-sm"
             onPointerDown={(event) => {
               setType("Product");
               onDragStart(
@@ -138,7 +139,7 @@ export function Sidebar({ onBack, user , projectName }: SidebarProps) {
 
           {/* Draggable Node 2: Process */}
           <div
-            className="group flex items-center justify-between bg-blue-200 p-3 rounded-xl text-gray-800 cursor-grab border border-transparent  hover:bg-blue-300 transition-all duration-200 shadow-sm"
+            className="group flex touch-none items-center justify-between bg-blue-200 p-3 rounded-xl text-gray-800 cursor-grab border border-transparent  hover:bg-blue-300 transition-all duration-200 shadow-sm"
             onPointerDown={(event) => {
               setType("process");
               onDragStart(
@@ -153,7 +154,7 @@ export function Sidebar({ onBack, user , projectName }: SidebarProps) {
 
           {/* Draggable Node 3: Resources */}
           <div
-            className="group flex items-center justify-between bg-blue-100 p-3 rounded-xl text-gray-800 cursor-grab border border-transparent  hover:bg-blue-200 transition-all duration-200 shadow-sm"
+            className="group flex touch-none items-center justify-between bg-blue-100 p-3 rounded-xl text-gray-800 cursor-grab border border-transparent  hover:bg-blue-200 transition-all duration-200 shadow-sm"
             onPointerDown={(event) => {
               setType("resources");
               onDragStart(

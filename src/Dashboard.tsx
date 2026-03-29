@@ -90,7 +90,7 @@ function Dashboard({ user, onOpenEditor }: DashboardProps) {
               </button>
 
               <button
-                className="flex flex-col justify-between  border-2 border-white cursor-pointer bg-[linear-gradient(to_bottom,#F3F4F6,transparent)] p-6 w-64 h-44 rounded-2xl shadow-sm hover:shadow-lg hover:border-white transition-all text-left"
+                className="flex flex-col justify-between  border-2 border-white cursor-pointer bg-[linear-gradient(to_bottom,#ffffff,transparent)] p-6 w-64 h-44 rounded-2xl shadow-sm hover:shadow-lg hover:border-white transition-all text-left"
                 onClick={() => onOpenEditor(project.id , project.name)}
               >
                 <h3 className="text-lg font-semibold text-gray-800 truncate pr-6">{project.name || "Untitled Project"}</h3>
