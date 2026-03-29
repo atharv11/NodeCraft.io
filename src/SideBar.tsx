@@ -12,7 +12,6 @@ import { useDraggable } from '@dnd-kit/core';
 // This is a simple ID generator for the nodes.
 let id = 0;
 
-
 interface DragGhostProps {
   type: string | null;
 }
