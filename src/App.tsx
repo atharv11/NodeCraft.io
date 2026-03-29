@@ -364,7 +364,7 @@ function FlowContent({
         />
         <Controls
           position="bottom-right"
-          className="bg-white shadow-xl rounded-xl m-4 p-1"
+          className="bg-white shadow-xl rounded-xl nodrag nopan z-9999 m-4 p-1"
         />
       </ReactFlow>
     </div>

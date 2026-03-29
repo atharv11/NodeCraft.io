@@ -111,7 +111,7 @@ const attributeConfigs = [
         </div>
       </div>
    {AttriHover && (
-            <div className="absolute top-10 left-0 z-50 p-4 w-60 border-2 border-white bg-[linear-gradient(to_bottom,#E0F2FE,transparent)] shadow-2xl rounded-2xl  flex flex-col gap-4 text-gray-800">
+            <div className="absolute top-10 left-0 z-50 p-4 w-60 border-2  bg-[linear-gradient(to_bottom,#E0F2FE,transparent)] shadow-2xl rounded-2xl  flex flex-col gap-4 text-gray-800">
               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Attributes</p>
               
               {/* 3. LOOP through your configs instead of copy-pasting */}
