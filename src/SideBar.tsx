@@ -100,7 +100,7 @@ export function Sidebar({ onBack, user , projectName }: SidebarProps) {
   );
 
   return (
-    <div className="fixed p-4 z-40 w-full md:w-64 h-auto md:h-screen">
+    <div className="fixed p-4 z-40 w-30 md:w-64 h-auto md:h-screen">
       {/* Render the ghost node during drag */}
       {isDragging && <DragGhost type={type} />}
 
