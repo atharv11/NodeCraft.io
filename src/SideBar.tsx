@@ -8,6 +8,7 @@ import { nanoid } from "nanoid";
 import type { User } from "firebase/auth";
 import { ArticlesSection } from"./Article.js";
 import { useDraggable } from '@dnd-kit/core';
+import { motion } from "motion/react"
 
 // This is a simple ID generator for the nodes.
 let id = 0;
@@ -20,6 +21,7 @@ interface DragGhostProps {
 export function DragGhost({ type }: DragGhostProps) {
   const { position } = useDnDPosition(); // Gets the cursor's screen coordinates
   const { isDragging } = useDnD(); // Gets the drag state
+
 
   // Ensures we only render when actively dragging
   if (!isDragging || !position) return null;
@@ -53,7 +55,7 @@ export function DragGhost({ type }: DragGhostProps) {
 interface SidebarProps {
   onBack: () => void;
   user: User;
-  projectName: string; // <--- ADD THIS
+  projectName: string; 
 }
 
 export function Sidebar({ onBack, user , projectName }: SidebarProps) {
@@ -122,7 +124,13 @@ export function Sidebar({ onBack, user , projectName }: SidebarProps) {
           </p>
 
           {/* Draggable Node 1: Product */}
-          <div
+          <motion.div
+           drag="x" // or drag={true} for all directions
+           dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+            dragElastic={0.05} // The "stretchiness" (0 to 1)
+            onDirectionLock={axis => console.log(`Locked to ${axis} axis`)}
+            dragTransition={{ bounceStiffness: 600, bounceDamping: 8 }}
+            
             className="group touch-none flex items-center justify-between bg-blue-300 p-3 rounded-xl text-gray-800 cursor-grab border border-transparent  hover:bg-blue-400 transition-all duration-200 shadow-sm"
             onPointerDown={(event) => {
               setType("Product");
@@ -134,10 +142,15 @@ export function Sidebar({ onBack, user , projectName }: SidebarProps) {
           >
             <span className="text-sm font-medium">Product</span>
             <div className="w-1.5 h-1.5 rounded-full bg-[#0E6EF7] opacity-0 group-hover:opacity-100 transition-opacity"></div>
-          </div>
+          </motion.div>
 
           {/* Draggable Node 2: Process */}
-          <div
+          <motion.div
+          drag="x" // or drag={true} for all directions
+           dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+            dragElastic={0.05} // The "stretchiness" (0 to 1)
+            onDirectionLock={axis => console.log(`Locked to ${axis} axis`)}
+            dragTransition={{ bounceStiffness: 600, bounceDamping: 8 }}
             className="group flex touch-none items-center justify-between bg-blue-200 p-3 rounded-xl text-gray-800 cursor-grab border border-transparent  hover:bg-blue-300 transition-all duration-200 shadow-sm"
             onPointerDown={(event) => {
               setType("process");
@@ -149,10 +162,15 @@ export function Sidebar({ onBack, user , projectName }: SidebarProps) {
           >
             <span className="text-sm font-medium">Process</span>
             <div className="w-1.5 h-1.5 rounded-full bg-[#0E6EF7] opacity-0 group-hover:opacity-100 transition-opacity"></div>
-          </div>
+          </motion.div>
 
           {/* Draggable Node 3: Resources */}
-          <div
+          <motion.div
+           drag="x" // or drag={true} for all directions
+           dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+            dragElastic={0.05} // The "stretchiness" (0 to 1)
+            onDirectionLock={axis => console.log(`Locked to ${axis} axis`)}
+            dragTransition={{ bounceStiffness: 600, bounceDamping: 8 }}
             className="group flex touch-none items-center justify-between bg-blue-100 p-3 rounded-xl text-gray-800 cursor-grab border border-transparent  hover:bg-blue-200 transition-all duration-200 shadow-sm"
             onPointerDown={(event) => {
               setType("resources");
@@ -164,7 +182,7 @@ export function Sidebar({ onBack, user , projectName }: SidebarProps) {
           >
             <span className="text-sm font-medium">Resources</span>
             <div className="w-1.5 h-1.5 rounded-full bg-[#0E6EF7] opacity-0 group-hover:opacity-100 transition-opacity"></div>
-          </div>
+          </motion.div>
 
           {/* --- NEW: Articles Section --- */}
           <div className="mt-4">

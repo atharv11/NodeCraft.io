@@ -57,6 +57,7 @@ const edgeTypes = {
   buttonEdge: ButtonEdge,
 };
 
+
 const initialNodes: Node[] = [];
 
 // --- INTERNAL FLOWCONTENT COMPONENT ---
@@ -72,6 +73,7 @@ function FlowContent({
   onBack: () => void;
 }) {
   
+  const [isDragMode, setIsDragMode] = useState(true); // Default to dragging
   const [edges, setEdges] = useState<Edge[]>([]);
   const [selectedNodeIds, setSelectedNodeIds] = useState<string[]>([]);
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
@@ -290,7 +292,7 @@ function FlowContent({
       {/* Floating Action Buttons */}
       <div className="fixed bottom-0 left-0 w-full p-4 z-50 flex justify-center">
 
-  <div className=" flex flex-col sm:flex-row gap-2 w-full max-w-[280px] sm:max-w-none sm:w-auto bg-white/50 sm:bg-transparent backdrop-blur-sm sm:backdrop-blur-none p-2 rounded-2xl sm:p-0">
+  <div className="opacity-15 hover:opacity-100 duration-700 flex flex-col sm:flex-row gap-2 w-full max-w-[280px] sm:max-w-none sm:w-auto bg-white/50 sm:bg-transparent backdrop-blur-sm sm:backdrop-blur-none p-2 rounded-2xl sm:p-0">
     
     <motion.button
      initial={{ opacity: 0, y: 20 }}
@@ -304,6 +306,7 @@ function FlowContent({
   
       className="px-4 py-2 bg-white border cursor-pointer border-gray-300 rounded-xl shadow-lg text-[11px] sm:text-sm font-bold uppercase tracking-tight"
       onClick={RetriveData}
+      title="click to Get progress from cloud"
     >
       Retrieve Data
     </motion.button>
@@ -319,6 +322,7 @@ function FlowContent({
   }}
       className="px-4 py-2 cursor-pointer bg-white border border-gray-300 rounded-xl shadow-lg text-[11px] sm:text-sm font-bold uppercase tracking-tight"
       onClick={saveSelectionAsArticle}
+     title="Click to save the selected Nodes and edges"
     >
       Save Selection
     </motion.button>
@@ -334,9 +338,24 @@ function FlowContent({
   }}
       className="px-4 py-2 bg-[#353535] cursor-pointer text-white rounded-xl shadow-lg text-[11px] sm:text-sm font-bold uppercase tracking-tight"
       onClick={SaveData}
+      title="click to save progress on cloud"
     >
       Save to Cloud
     </motion.button>
+    <motion.button 
+     initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.05 }} // Stagger them if you have multiple buttons
+      whileHover={{ 
+    scale: 1.05, 
+    boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.15)",
+    filter: "brightness(2.1)" }}// Makes the button slightly brighter
+  onClick={() => setIsDragMode(!isDragMode)}
+  title="switch between selection mode or drag mode"
+  className="DragTool cursor-pointer border rounded-xl shadow-lg font-bold bg-white py-2 px-4  {isDragMode ? 'active-button-style' : 'inactive-style'} "
+>
+  {isDragMode ? 'DRAG MODE ACTIVE' : 'SWITCH TO DRAG'}
+</motion.button>
     
   </div>
 </div>
@@ -351,11 +370,13 @@ function FlowContent({
         onConnect={onConnect}
         onSelectionChange={onSelectionChange}
         isValidConnection={isValidConnection}
-        
-        // ↓ Optional: always allow box-selection without needing Shift
-        selectionOnDrag={true}
-        panOnDrag={false}          // so drags create selection instead of panning
-        className="w-screen h-screen"
+        // When isDragMode is true, selection is disabled, and panning is enabled
+        panOnDrag={isDragMode}
+        selectionOnDrag={!isDragMode}
+  
+        //  visually change the cursor
+        style={{ cursor: isDragMode ? 'grab' : 'crosshair' }}
+  
       >
         <Background
           gap={50}

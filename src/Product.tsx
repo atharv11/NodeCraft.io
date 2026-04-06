@@ -1,6 +1,7 @@
 import { GoTasklist } from "react-icons/go";
 import { TbLayoutGridAdd } from "react-icons/tb";
 import React, { useCallback, useState } from "react";
+import { motion } from "motion/react"
 import {
   Position,
   useReactFlow,
@@ -99,16 +100,51 @@ const Process = ({ data, id }: NodeProps<ProcessNode>) => {
                   : "w-6 h-6 cursor-pointer text-[#353535] bg-[#c7c7c7] rounded-full p-1 m-2"
               }`}
             />
-            <div className={`flex ${Hovered ? "w-auto opacity-100 mr-2" : "w-0 opacity-0 mr-0"}`}>
+            <motion.div 
+            whileHover={{ 
+                   scale: 1.05,
+    
+                   }}
+            className={`flex ${Hovered ? "w-auto opacity-100 mr-2" : "w-0 opacity-0 mr-0"}`}>
+              <motion.div
+                // 1. Increase size on hover
+                  whileHover={{ 
+                   scale: 1.05,
+    
+                   }}
+  
+                   // 2. Bounce effect on tap (click)
+                   whileTap={{ 
+                     scale: 0.75,
+    
+                   }}
+               >
+              
               <RxCross2
                 className="DeleteIcon w-6 h-6 cursor-pointer text-[#353535] bg-[#c7c7c7] rounded-full p-1 m-2"
                 onClick={handleDelete}
               />
+             
+              </motion.div>
+              <motion.div
+               // 1. Increase size on hover
+                  whileHover={{ 
+                   scale: 1.05,
+    
+                   }}
+  
+                   // 2. Bounce effect on tap (click)
+                   whileTap={{ 
+                     scale: 0.75,
+    
+                   }}
+              >
               <GoTasklist
                 className="AtrributeIcon w-6.5 h-6.5 cursor-pointer text-[#353535] bg-[#c7c7c7] rounded-full p-1 m-2"
                 onClick={() => setAttriHover(!AttriHover)}
               />
-            </div>
+              </motion.div>
+            </motion.div>
           </button>
         </div>
 
@@ -123,7 +159,7 @@ const Process = ({ data, id }: NodeProps<ProcessNode>) => {
       </div>
 
       {AttriHover && (
-        <div className="absolute top-10 left-0 z-50 p-4 w-60 border-2 border-white bg-white shadow-2xl rounded-2xl flex flex-col gap-4 text-gray-800">
+        <div className="absolute top-10 left-0 z-50 p-4 w-60 border-2 border-white bg-[linear-gradient(to_bottom,#E0F2FE,transparent)] shadow-2xl rounded-2xl flex flex-col gap-4 text-gray-800">
           <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Attributes</p>
           {attributeConfigs.map((config) => (
             <div key={config.key} className="flex flex-col gap-1">

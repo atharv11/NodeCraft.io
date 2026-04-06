@@ -9,6 +9,7 @@ import {
 } from "@xyflow/react";
 import CustomHandle from "./CustomHandle.js";
 import { RxCross2 } from "react-icons/rx";
+import { motion } from "motion/react"
 
 // Updated type to include the dynamic keys from attributeConfigs
 type ProcessData = {
@@ -87,7 +88,14 @@ const Process = ({ data, id }: NodeProps<ProcessNode>) => {
     <div className="w-full h-full">
       <div className="ProcessNode rounded-3xl bg-[#0E6EF7] text-white shadow-2xl">
         <div className="multiPurposeButton p-2">
-          <button
+          <motion.button
+                // 1. Increase size on hover
+                  whileHover={{ 
+                   scale: 1.05,
+    
+                   }}
+  
+              
             className={`bg-white text-[#353535] rounded-full h-10 flex transition-all duration-300 shadow-md overflow-hidden ${
               Hovered ? "w-40" : "w-10"
             }`}
@@ -101,17 +109,49 @@ const Process = ({ data, id }: NodeProps<ProcessNode>) => {
                   : "w-6 h-6 cursor-pointer text-[#353535] bg-[#c7c7c7] rounded-full p-1 m-2"
               }`}
             />
-            <div className={`flex ${Hovered ? "w-auto opacity-100 mr-2" : "w-0 opacity-0 mr-0"}`}>
+            <div   
+            
+            className={`flex ${Hovered ? "w-auto opacity-100 mr-2" : "w-0 opacity-0 mr-0"}`}>
+               <motion.div
+                // 1. Increase size on hover
+                  whileHover={{ 
+                   scale: 1.05,
+    
+                   }}
+  
+                   // 2. Bounce effect on tap (click)
+                   whileTap={{ 
+                     scale: 0.75,
+    
+                   }}
+               >
+              
               <RxCross2
                 className="DeleteIcon w-6 h-6 cursor-pointer text-[#353535] bg-[#c7c7c7] rounded-full p-1 m-2"
                 onClick={handleDelete}
               />
+             
+              </motion.div>
+              <motion.div
+               // 1. Increase size on hover
+                  whileHover={{ 
+                   scale: 1.05,
+    
+                   }}
+  
+                   // 2. Bounce effect on tap (click)
+                   whileTap={{ 
+                     scale: 0.75,
+    
+                   }}
+              >
               <GoTasklist
                 className="AtrributeIcon w-6.5 h-6.5 cursor-pointer text-[#353535] bg-[#c7c7c7] rounded-full p-1 m-2"
                 onClick={() => setAttriHover(!AttriHover)}
               />
+              </motion.div>
             </div>
-          </button>
+          </motion.button>
         </div>
 
         <div className="bg-[#353535] rounded-3xl p-3">
@@ -127,7 +167,7 @@ const Process = ({ data, id }: NodeProps<ProcessNode>) => {
       </div>
 
       {AttriHover && (
-        <div className="absolute top-10 left-0 z-50 p-4 w-60 border-2 border-white bg-white shadow-2xl rounded-2xl flex flex-col gap-4 text-gray-800">
+        <div className="absolute top-10 left-0 z-50 p-4 w-60 border-2 border-white bg-[linear-gradient(to_bottom,#E0F2FE,transparent)] shadow-2xl rounded-2xl flex flex-col gap-4 text-gray-800">
           <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Attributes</p>
           {attributeConfigs.map((config) => (
             <div key={config.key} className="flex flex-col gap-1">
