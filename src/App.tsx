@@ -375,6 +375,7 @@ function FlowContent({
         selectionOnDrag={!isDragMode}
   
         //  visually change the cursor
+        // code 
         style={{ cursor: isDragMode ? 'grab' : 'crosshair' }}
   
       >
