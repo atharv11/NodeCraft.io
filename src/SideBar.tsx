@@ -31,7 +31,7 @@ export function DragGhost({ type }: DragGhostProps) {
       className={` fixed 
         pointer-events-none 
         z-9999 // Ensures it sits on top of everything
-        w-32 h-12 flex items-center justify-center rounded-lg shadow-xl  p-2
+        w-32 h-auto flex items-center justify-center rounded-lg shadow-xl  p-2
         text-white transition duration-75 
       `}
       style={{
