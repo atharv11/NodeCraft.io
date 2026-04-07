@@ -292,7 +292,7 @@ function FlowContent({
       {/* Floating Action Buttons */}
       <div className="fixed bottom-0 left-0 w-full p-4 z-50 flex justify-center">
 
-  <div className="opacity-15 hover:opacity-100 duration-700 flex flex-col sm:flex-row gap-2 w-full max-w-[280px] sm:max-w-none sm:w-auto bg-white/50 sm:bg-transparent backdrop-blur-sm sm:backdrop-blur-none p-2 rounded-2xl sm:p-0">
+  <div className="opacity-75 hover:opacity-100 duration-700 flex flex-col sm:flex-row gap-2 w-full max-content sm:max-w-none sm:w-auto bg-white/50 sm:bg-transparent backdrop-blur-sm sm:backdrop-blur-none p-2 rounded-2xl sm:p-0">
     
     <motion.button
      initial={{ opacity: 0, y: 20 }}
@@ -304,7 +304,7 @@ function FlowContent({
     filter: "brightness(2.1)" // Makes the button slightly brighter
   }}
   
-      className="px-4 py-2 bg-white border cursor-pointer border-gray-300 rounded-xl shadow-lg text-[11px] sm:text-sm font-bold uppercase tracking-tight"
+      className="px-2 py-2 bg-white border cursor-pointer border-gray-300 rounded-xl shadow-lg text-[8px] sm:text-sm font-bold uppercase tracking-tight"
       onClick={RetriveData}
       title="click to Get progress from cloud"
     >
@@ -320,7 +320,7 @@ function FlowContent({
     boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.15)",
     filter: "brightness(2.1)" // Makes the button slightly brighter
   }}
-      className="px-4 py-2 cursor-pointer bg-white border border-gray-300 rounded-xl shadow-lg text-[11px] sm:text-sm font-bold uppercase tracking-tight"
+      className="px-2 py-2 cursor-pointer bg-white border border-gray-300 rounded-xl shadow-lg text-[8px] sm:text-sm font-bold uppercase tracking-tight"
       onClick={saveSelectionAsArticle}
      title="Click to save the selected Nodes and edges"
     >
@@ -336,7 +336,7 @@ function FlowContent({
     boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.15)",
     filter: "brightness(2.1)" // Makes the button slightly brighter
   }}
-      className="px-4 py-2 bg-[#353535] cursor-pointer text-white rounded-xl shadow-lg text-[11px] sm:text-sm font-bold uppercase tracking-tight"
+      className="px-2 py-2 bg-[#353535] cursor-pointer text-white rounded-xl shadow-lg text-[8px] sm:text-sm font-bold uppercase tracking-tight"
       onClick={SaveData}
       title="click to save progress on cloud"
     >

@@ -29,9 +29,9 @@ export function DragGhost({ type }: DragGhostProps) {
   return (
     <div
       className={` fixed 
-        pointer-events-none 
-        z-9999 // Ensures it sits on top of everything
-        w-32 h-auto flex items-center justify-center rounded-lg shadow-xl  p-2
+       ${isDragging ? 'pointer-events-none' : 'pointer-events-auto'}
+        z-50 
+        w-32 h-1 flex items-center justify-center rounded-lg shadow-xl  p-2
         text-white transition duration-75 
       `}
       style={{
@@ -102,7 +102,7 @@ export function Sidebar({ onBack, user , projectName }: SidebarProps) {
   );
 
   return (
-    <div className="fixed p-4 z-40 w-50 md:w-64 h-auto md:h-screen">
+    <div className="fixed p-4 top-0 left-0 z-40 w-50 md:w-64 h-full md:h-screen">
       {/* Render the ghost node during drag */}
       {isDragging && <DragGhost type={type} />}
 
