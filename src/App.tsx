@@ -36,6 +36,7 @@ import {
 // Component imports
 import { DnDProvider } from "./useDnD.js";
 import { Sidebar } from "./SideBar.js";
+import ImportExport from "./import-export.js";
 import ButtonEdge from "./ButtonEdge.js";
 import Product from "./Product.js";
 import Process from "./Process.js";
@@ -286,8 +287,17 @@ function FlowContent({
 
   return (
     <DndContext sensors={sensors}>
-    <div className="w-full h-screen bg-[#ffffff]">
+    {/* I added 'relative' to the wrapper div below so the absolute positioning of the buttons anchors correctly */}
+    <div className="w-full h-screen bg-[#ffffff] relative"> 
       <Sidebar onBack={onBack} user={user} projectName={projectName || "Untitled Project"} />
+
+      {/* NEW: Import/Export Buttons mapped to the top right */}
+      <ImportExport 
+        nodes={nodes} 
+        edges={edges} 
+        setNodes={setNodes} 
+        setEdges={setEdges} 
+      />
 
       {/* Floating Action Buttons */}
       <div className="fixed bottom-0 left-0 w-full p-4 z-50 flex justify-center">
