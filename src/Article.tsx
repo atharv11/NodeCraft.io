@@ -172,7 +172,7 @@ export function ArticlesSection({ user }: ArticlesSectionProps) {
       {articles.map((article) => (
         <div
           key={article.id}
-          className="group flex items-center justify-between cursor-pointer p-2 rounded-lg text-gray-800 border bg-gray-200  hover:bg-gray-300 transition-all duration-200 shadow-sm"
+          className="group flex items-center justify-between  cursor-pointer p-2 rounded-lg text-gray-800 border bg-gray-200  hover:bg-gray-300 transition-all duration-200 shadow-sm"
           onPointerDown={(event) => {
             // Only start drag when clicking the main card, not the delete button
             onDragStart(
