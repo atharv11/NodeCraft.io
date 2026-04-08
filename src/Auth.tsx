@@ -86,10 +86,12 @@ useEffect(() => {
             
         <div className="p-6 sm:p-8">
           <h2 className="text-xl sm:text-2xl  text-center text-black-800 mb-1">
-            {isLogin ? 'Welcome Back!' : 'Create Account'}
+            
+             {isLogin ? 'Welcome User!' : 'Create Account'}
+            
           </h2>
           <p className="text-center text-black-500 mb-6 text-xs sm:text-sm">
-            {isLogin ? 'Enter your details to sign in.' : 'Start your journey with us.'}
+           {isLogin ? 'Enter your details to sign in.' : 'Start your journey with us.'}
           </p>
 
           {error && (
