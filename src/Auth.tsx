@@ -1,5 +1,11 @@
 import React, { useState , useRef , useEffect} from 'react';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
+  updateProfile,
+  sendEmailVerification,
+  signOut 
+} from 'firebase/auth';
 import { auth } from './FireBase.js'; 
 
 
@@ -10,20 +16,40 @@ export default function Auth() {
   const [Name, setName] = useState("");
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null); // Added for success messages
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setMessage(null);
     setLoading(true);
 
     try {
       if (isLogin) {
-        await signInWithEmailAndPassword(auth, email, password);
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        
+        // Check if the user's email is verified
+        if (!userCredential.user.emailVerified) {
+          await signOut(auth); // Sign them back out immediately
+          setError("Please verify your email before logging in. Check your inbox or spam folder.");
+          return;
+        }
       } else {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         if (userCredential.user) {
           await updateProfile(userCredential.user, { displayName: Name });
+          
+          // Send the verification email
+          await sendEmailVerification(userCredential.user);
+          
+          // Sign the user out immediately so they don't auto-login unverified
+          await signOut(auth); 
+          
+          // Show success message and switch to login view
+          setMessage("Account created! A verification link has been sent to your email.");
+          setIsLogin(true); 
+          setPassword(''); // Clear password field for security
         }
       }
     } catch (err: any) {
@@ -94,9 +120,17 @@ useEffect(() => {
            {isLogin ? 'Enter your details to sign in.' : 'Start your journey with us.'}
           </p>
 
+          {/* Error Message */}
           {error && (
             <div className="bg-red-50 text-red-500 text-xs sm:text-sm p-3 rounded-lg mb-4 border border-red-200 text-center">
               {error}
+            </div>
+          )}
+
+          {/* Success Message (for verification email sent) */}
+          {message && (
+            <div className="bg-green-50 text-green-600 text-xs sm:text-sm p-3 rounded-lg mb-4 border border-green-200 text-center">
+              {message}
             </div>
           )}
 
@@ -152,7 +186,11 @@ useEffect(() => {
           <div className="mt-8 text-center text-sm text-black-600">
             {isLogin ? "Don't have an account? " : "Already have an account? "}
             <button
-              onClick={() => setIsLogin(!isLogin)}
+              onClick={() => {
+                setIsLogin(!isLogin);
+                setError(null);
+                setMessage(null);
+              }}
               className="text-black  hover:underline focus:outline-none p-2" 
             >
               {isLogin ? 'Sign Up' : 'Log In'}

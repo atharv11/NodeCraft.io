@@ -416,6 +416,14 @@ export default function App() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      
+      if (currentUser && !currentUser.emailVerified) {
+        // If the user exists but hasn't clicked the email link yet
+        setUser(null); 
+        setLoading(false);
+        return;
+      }
+
       setUser(currentUser);
       setLoading(false);
 
