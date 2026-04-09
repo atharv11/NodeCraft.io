@@ -54,13 +54,36 @@ const attributeConfigs = [
     );
   };
 
-  function updateField(key: string, arg1: number): void {
-    throw new Error("Function not implemented.");
-  }
+   const updateField = useCallback((key: string, value: number) => {
+      setNodes((nodes) =>
+        nodes.map((n) => {
+          if (n.id === id) {
+            return {
+              ...n,
+              data: { ...n.data, [key]: value },
+            };
+          }
+          return n;
+        })
+      );
+    }, [id, setNodes]);
 
-  function updateUnit(key: string, value: string): void {
-    throw new Error("Function not implemented.");
-  }
+   const updateUnit = useCallback((key: string, value: string) => {
+      setNodes((nodes) =>
+        nodes.map((n) => {
+          if (n.id === id) {
+            return {
+              ...n,
+              data: {
+                ...n.data,
+                units: { ...(n.data.units || {}), [key]: value },
+              },
+            };
+          }
+          return n;
+        })
+      );
+    }, [id, setNodes]);
 
   return (
     <div className="w-full h-full ">
@@ -151,29 +174,31 @@ const attributeConfigs = [
               
               {/* 3. LOOP through your configs instead of copy-pasting */}
               {attributeConfigs.map((config) => (
-                <div key={config.key} className="flex flex-col gap-1">
-                  <label className="text-[9px] text-gray-500 font-medium">{config.label}</label>
-                  <div className="flex items-center gap-2 bg-gray-50 p-2 rounded-lg border border-gray-400">
-                    <input
-                      type="number"
-                      className="nodrag w-full bg-transparent text-sm outline-none"
-                      defaultValue={data[config.key as keyof ProcessData]}
-                      onChange={(e) => updateField(config.key, parseFloat(e.target.value))}
-                    />
-                    <select 
-                      className="nodrag bg-transparent text-[10px] font-bold text-blue-500 outline-none cursor-pointer border-l pl-2 border-gray-300"
-                      value={data.units?.[config.key] || config.options[0]}
-                      onChange={(e) => updateUnit(config.key, e.target.value)}
-                    >
-                      {config.options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                    </select>
-                  </div>
-                </div>
-              ))}
+            <div key={config.key} className="flex flex-col gap-1">
+              <label className="text-[9px] text-gray-500 font-medium">{config.label}</label>
+              <div className="flex items-center gap-2 bg-gray-50 p-2 rounded-lg border border-gray-400">
+                <input
+                  type="number"
+                  className="nodrag w-full bg-transparent text-sm outline-none"
+                  value={data[config.key as keyof ProcessData] as number || ""} 
+                  onChange={(e) => updateField(config.key, parseFloat(e.target.value) || 0)}
+                />
+                <select
+                  className="nodrag bg-transparent text-[10px] font-bold text-blue-500 outline-none cursor-pointer border-l pl-2 border-gray-400"
+                  value={data.units?.[config.key] || config.options[0]}
+                  onChange={(e) => updateUnit(config.key, e.target.value)}
+                >
+                  {config.options.map((opt) => (
+                    <option key={opt} value={opt}>{opt}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          ))}
             </div>
           )}
-        <CustomHandle type="source" position={Position.Left} id="source-right" />
-      <CustomHandle type="target" position={Position.Right} />
+        <CustomHandle type="target" position={Position.Left} id="source-right" />
+      <CustomHandle type="source" position={Position.Right} />
     </div>
   );
 };
